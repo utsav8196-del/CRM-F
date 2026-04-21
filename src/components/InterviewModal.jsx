@@ -21,7 +21,7 @@ export default function InterviewModal({
   const phoneTimeoutRef = useRef(null);
 
   // Default meeting link
-  const DEFAULT_MEETING_LINK = "https://meet.google.com/eeu-xnbf-yzb";
+  const DEFAULT_MEETING_LINK = "https://meet.google.com/abc-defg-hij";
 
   // Check if round is Pending
   const isPendingRound = newInterview.round === "Pending";
@@ -309,7 +309,7 @@ export default function InterviewModal({
     setEmailUsed(false);
     setPhoneExists(false);
     setEmailChecking(false);
-    setPhoneChecking(false);
+    setPhoneChecking(false); 
     setFormErrors({});
     setEmailStatus("");
     if (emailTimeoutRef.current) clearTimeout(emailTimeoutRef.current);
@@ -665,7 +665,7 @@ export default function InterviewModal({
                 </label>
                 {!isPendingRound && (
                   <span className="label-text-alt text-gray-500">
-                    Default: meet.google.com/eeu-xnbf-yzb
+                    Default: meet.google.com/abc-defg-hij
                   </span>
                 )}
               </div>

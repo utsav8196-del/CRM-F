@@ -383,7 +383,7 @@ export default function Candidates() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-semibold">Full Name *</span>
+                  <span className="label-text font-semibold">Full Name :-</span>
                 </label>
                 <input
                   name="name"
@@ -391,7 +391,7 @@ export default function Candidates() {
                   onChange={handleChange}
                   type="text"
                   placeholder="Enter candidate name"
-                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-15 box-border-sizing-border-box rounded-xl"
                   required
                 />
               </div>
@@ -399,16 +399,16 @@ export default function Candidates() {
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold">
-                    Email Address *
+                    Email Address :-
                   </span>
                 </label>
                 <input
                   name="email"
                   value={form.email}
-                  onChange={handleChange}
+                  onChange={handleChange} 
                   type="email"
                   placeholder="Enter email address"
-                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-8 box-border-sizing-border-box rounded-xl"
                   required
                 />
               </div>
@@ -416,7 +416,7 @@ export default function Candidates() {
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-semibold">
-                    Phone Number *
+                    Phone Number :-
                   </span>
                 </label>
                 <input
@@ -425,20 +425,20 @@ export default function Candidates() {
                   onChange={handleChange}
                   type="text"
                   placeholder="Enter phone number"
-                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-6 box-border-sizing-border-box rounded-xl"
                   required
                 />
               </div>
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text font-semibold">Status *</span>
+                  <span className="label-text font-semibold">Status :-</span>
                 </label>
                 <select
                   name="status"
                   value={form.status}
                   onChange={handleChange}
-                  className="select select-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="select select-bordered focus:outline-none focus:ring-2 focus:ring-primary left-22 box-border-sizing-border-box rounded-xl"
                   required
                 >
                   <option value="">Select Status</option>

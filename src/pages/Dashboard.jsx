@@ -163,11 +163,11 @@ export default function Dashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-          <p className="text-base-content/60 mt-1">
+          <p className="text-base-content/60 mt-1 text-xl">
             Welcome to your interview management system
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           <div className="text-sm text-base-content/60">
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
@@ -186,6 +186,7 @@ export default function Dashboard() {
             ) : (
               <svg
                 className="w-4 h-4"
+                
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -219,7 +220,7 @@ export default function Dashboard() {
                 }`}
               >
                 {totalCandidatesChange.isPositive ? "↑" : "↓"}{" "}
-                {totalCandidatesChange.value}% from previous
+                {totalCandidatesChange.value}% from previous 
               </p>
             </div>
             <div className="bg-primary/10 p-3 rounded-lg">
@@ -253,7 +254,7 @@ export default function Dashboard() {
               <p
                 className={`text-sm mt-1 ${
                   scheduledInterviewsChange.isPositive
-                    ? "text-success"
+                    ? "text-success"  
                     : "text-error"
                 }`}
               >
@@ -261,11 +262,13 @@ export default function Dashboard() {
                 {scheduledInterviewsChange.value}% from previous
               </p>
             </div>
+
             <div className="bg-info/10 p-3 rounded-lg">
               <svg
                 className="w-6 h-6 text-info"
                 fill="none"
                 stroke="currentColor"
+                
                 viewBox="0 0 24 24"
               >
                 <path
@@ -400,7 +403,8 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-base-content/60">Candidates</span>
+              <span className="text-sm text-base-content/60">
+              </span>
             </div>
           </div>
         </div>

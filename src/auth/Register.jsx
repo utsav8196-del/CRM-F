@@ -1,0 +1,173 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+function Registration() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    email: "",
+    password: "",
+    rePassword: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    }
+    if (!formData.password.trim()) {
+      newErrors.password = "Password is required";
+    }
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Handle form submission here
+      console.log("Form submitted:", formData);
+      try {
+        const { firstName, email, password } = formData;
+
+        const response = await fetch(
+          "http://localhost:5000/api/auth/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              firstName,
+              email,
+              password,
+            }),
+          }
+        );
+        const json = await response.json();
+        console.log("json", json);
+        if (json) {
+          localStorage.setItem("token", json.authtoken);
+          navigate("/login");
+        } else {
+          navigate("/signup");
+          throw new Error(json.message || "User Already Exists...");
+        }
+      } catch (error) {
+        toast.error(error.message || "User Already Exists...", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700 p-4">
+      <div className="w-full max-w-lg bg-white/20 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/30">
+        <h2 className="text-3xl font-bold text-white text-center mb-6">
+          Registration
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-white mb-1">First Name</label>
+            <input
+              type="text"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              placeholder="Full Name"
+              className={`w-full p-3 rounded-lg outline-none ${
+                errors.firstName
+                  ? "border-2 border-red-500"
+                  : formData.firstName
+                  ? "border-2 border-green-500"
+                  : "border border-gray-300"
+              }`}
+            />
+            {errors.firstName && (
+              <p className="text-red-500 mt-1 text-sm">{errors.firstName}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-white mb-1">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="your@email.com"
+              className={`w-full p-3 rounded-lg outline-none ${
+                errors.email
+                  ? "border-2 border-red-500"
+                  : formData.email
+                  ? "border-2 border-green-500"
+                  : "border border-gray-300"
+              }`}
+            />
+            {errors.email && (
+              <p className="text-red-500 mt-1 text-sm">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-white mb-1">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Your Password"
+              className={`w-full p-3 rounded-lg outline-none ${
+                errors.password
+                  ? "border-2 border-red-500"
+                  : formData.password
+                  ? "border-2 border-green-500"
+                  : "border border-gray-300"
+              }`}
+            />
+            {errors.password && (
+              <p className="text-red-500 mt-1 text-sm">{errors.password}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 mt-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold hover:scale-105 transition-transform shadow-lg"
+          >
+            Register
+          </button>
+
+          <p className="text-center text-white/80 mt-4 text-sm">
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="underline font-semibold hover:text-white"
+            >
+              Login
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default Registration;

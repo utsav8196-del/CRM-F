@@ -140,11 +140,11 @@ export default function Settings() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Full Name *</span>
+              <span className="label-text font-semibold">Full Name :-</span>
             </label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-24 box-border-sizing-border-box rounded-xl"
               placeholder="Enter your full name"
               value={profile.fullName}
               onChange={(e) => handleProfileChange('fullName', e.target.value)}
@@ -153,11 +153,11 @@ export default function Settings() {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Email *</span>
+              <span className="label-text font-semibold">Email :-</span>
             </label>
             <input
               type="email"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-22 box-border-sizing-border-box rounded-xl"
               placeholder="your@email.com"
               value={profile.email}
               onChange={(e) => handleProfileChange('email', e.target.value)}
@@ -166,11 +166,11 @@ export default function Settings() {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Phone Number</span>
+              <span className="label-text font-semibold">Phone Number :-</span>
             </label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-15 box-border-sizing-border-box rounded-xl"
               placeholder="+91 9876543210"
               value={profile.phone}
               onChange={(e) => handleProfileChange('phone', e.target.value)}
@@ -179,10 +179,10 @@ export default function Settings() {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Department</span>
+              <span className="label-text font-semibold">Department :-</span>
             </label>
             <select 
-              className="select select-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="select select-bordered focus:outline-none focus:ring-2 focus:ring-primary left-10 box-border-sizing-border-box rounded-xl"
               value={profile.department}
               onChange={(e) => handleProfileChange('department', e.target.value)}
             >
@@ -196,11 +196,11 @@ export default function Settings() {
 
           <div className="form-control md:col-span-2">
             <label className="label">
-              <span className="label-text font-semibold">Position</span>
+              <span className="label-text font-semibold">Position :-</span>
             </label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-28 box-border-sizing-border-box rounded-xl"
               placeholder="Your position in company"
               value={profile.position}
               onChange={(e) => handleProfileChange('position', e.target.value)}
@@ -240,11 +240,11 @@ export default function Settings() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Current Password *</span>
+              <span className="label-text font-semibold">Current Password :-</span>
             </label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-21 box-border-sizing-border-box rounded-xl"
               value={passwords.currentPassword}
               onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
             />
@@ -252,11 +252,11 @@ export default function Settings() {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">New Password *</span>
+              <span className="label-text font-semibold">New Password :-</span>
             </label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-15 box-border-sizing-border-box rounded-xl"
               value={passwords.newPassword}
               onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
             />
@@ -264,11 +264,11 @@ export default function Settings() {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold">Confirm New Password *</span>
+              <span className="label-text font-semibold">Confirm New Password :-</span>
             </label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary"
+              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-10 box-border-sizing-border-box rounded-xl"
               value={passwords.confirmPassword}
               onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
             />
@@ -301,7 +301,7 @@ export default function Settings() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.24 8.56a5.97 5.97 0 01-.93-3.26 6 6 0 0111.75 2.33 6 6 0 01-2.13 4.12M4.93 4.93A9.98 9.98 0 001 12.73c0 2.13.78 4.07 2.07 5.55" />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold">Notification Preferences</h3>
+          <h3 className="text-xl font-semibold bg-g bg-base-100 m-0.5 border border-base-300 rounded-xl p-2">Notification Preferences</h3>
         </div>
 
         <div className="space-y-4">
@@ -391,3 +391,195 @@ export default function Settings() {
     </div>
   );
 }
+
+
+
+
+
+// import { useState } from "react";
+// import useToast from "../hooks/useToast";
+
+// export default function Settings() {
+//   const { showSuccess, showError } = useToast();
+//   const [loading, setLoading] = useState(false);
+//   const [activeTab, setActiveTab] = useState("profile");
+
+//   const [profile, setProfile] = useState({
+//     fullName: "",
+//     email: "",
+//     phone: "",
+//     department: "",
+//     position: ""
+//   });
+
+//   const [passwords, setPasswords] = useState({
+//     currentPassword: "",
+//     newPassword: "",
+//     confirmPassword: ""
+//   });
+
+//   const [notifications, setNotifications] = useState({
+//     emailNotifications: true,
+//     candidateAlerts: true,
+//     interviewReminders: true,
+//     statusUpdates: true,
+//     dailyDigest: false
+//   });
+
+//   const passwordStrength =
+//     passwords.newPassword.length > 10
+//       ? "Strong"
+//       : passwords.newPassword.length > 5
+//       ? "Medium"
+//       : "Weak";
+
+//   const Card = ({ title, children }) => (
+//     <div className="bg-base-100 rounded-2xl p-6 shadow-xl border border-base-300 animate-fade-in">
+//       <h3 className="text-xl font-bold mb-6">{title}</h3>
+//       {children}
+//     </div>
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 p-6 md:p-10">
+
+//       <div className="mb-8 rounded-2xl bg-gradient-to-r from-primary to-secondary p-6 text-white shadow-xl">
+//         <h2 className="text-3xl font-bold">Account Settings</h2>
+//         <p className="opacity-90">Manage profile, security & notifications</p>
+//       </div>
+
+//       <div className="tabs tabs-boxed mb-8 bg-base-200 p-2 rounded-xl">
+//         {["profile", "security", "notifications"].map(tab => (
+//           <button
+//             key={tab}
+//             onClick={() => setActiveTab(tab)}
+//             className={`tab capitalize transition-all ${
+//               activeTab === tab ? "tab-active font-semibold" : ""
+//             }`}
+//           > 
+//             {tab}
+//           </button>
+//         ))}
+//       </div>
+
+//       {activeTab === "profile" && (
+//         <Card title="Profile Information">
+//           <div className="flex items-center gap-6 mb-8">
+//             <div className="avatar">
+//               <div className="w-20 rounded-full ring ring-primary ring-offset-2">
+//                 <img src="https://i.pravatar.cc/150" alt="avatar" />
+//               </div>
+//             </div>
+//             <button className="btn btn-outline btn-primary btn-sm">
+//               Change Avatar
+//             </button>
+//           </div>
+
+//           <div className="grid md:grid-cols-2 gap-6">
+//             {Object.entries(profile).map(([key, value]) => (
+//               <div key={key} className="form-control">
+//                 <label className="label font-semibold capitalize">
+//                   {key.replace(/([A-Z])/g, " $1")}
+//                 </label>
+//                 <input
+//                   value={value}
+//                   onChange={e =>
+//                     setProfile({ ...profile, [key]: e.target.value })
+//                   }
+//                   className="input input-bordered focus:ring-2 focus:ring-primary"
+//                 />
+//               </div>
+//             ))}
+//           </div>
+
+//           <div className="flex justify-end mt-8 sticky bottom-4">
+//             <button
+//               className="btn btn-primary px-10 hover:scale-105 transition"
+//               disabled={loading}
+//               onClick={() => showSuccess("Profile Saved")}
+//             >
+//               Save Profile
+//             </button>
+//           </div>
+//         </Card>
+//       )}
+
+//       {activeTab === "security" && (
+//         <Card title="Security Settings">
+//           <div className="grid md:grid-cols-2 gap-6">
+//             {Object.entries(passwords).map(([key, value]) => (
+//               <div key={key} className="form-control">
+//                 <label className="label font-semibold capitalize">
+//                   {key.replace(/([A-Z])/g, " $1")}
+//                 </label>
+//                 <input
+//                   type="password"
+//                   value={value}
+//                   onChange={e =>
+//                     setPasswords({ ...passwords, [key]: e.target.value })
+//                   }
+//                   className="input input-bordered focus:ring-2 focus:ring-secondary"
+//                 />
+//               </div>
+//             ))}
+//           </div>
+
+//           <div className="mt-4">
+//             <span className="text-sm font-semibold">Password Strength:</span>
+//             <span
+//               className={`ml-2 badge ${
+//                 passwordStrength === "Strong"
+//                   ? "badge-success"
+//                   : passwordStrength === "Medium"
+//                   ? "badge-warning"
+//                   : "badge-error"
+//               }`}
+//             >
+//               {passwordStrength}
+//             </span>
+//           </div>
+
+//           <div className="flex justify-end mt-8">
+//             <button className="btn btn-secondary px-10">
+//               Update Password
+//             </button>
+//           </div>
+//         </Card>
+//       )}
+
+//       {activeTab === "notifications" && (
+//         <Card title="Notification Preferences">
+//           <div className="space-y-4">
+//             {Object.entries(notifications).map(([key, value]) => (
+//               <div
+//                 key={key}
+//                 className="flex items-center justify-between p-4 rounded-xl bg-base-200 hover:bg-base-300 transition"
+//               >
+//                 <span className="font-medium capitalize">
+//                   {key.replace(/([A-Z])/g, " $1")}
+//                 </span>
+//                 <input
+//                   type="checkbox"
+//                   className="toggle toggle-accent"
+//                   checked={value}
+//                   onChange={() =>
+//                     setNotifications({
+//                       ...notifications,
+//                       [key]: !value
+//                     })
+//                   }
+//                 />
+//               </div>
+//             ))}
+//           </div>
+
+//           <div className="flex justify-end mt-8">
+//             <button className="btn btn-accent px-10">
+//               Save Preferences
+//             </button>
+//           </div>
+//         </Card>
+//       )}
+//     </div>
+//   );
+// }
