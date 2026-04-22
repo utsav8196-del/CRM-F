@@ -1,6 +1,7 @@
 import Sidebar from "../components/Sidebar";
 import MobileSidebar from "../components/MobileSidebar";
-import { useState } from 'react';
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
 
 export default function MainLayout({ children }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function MainLayout({ children }) {
       {/* Adjust main to account for desktop sidebar and mobile header */}
       <main className="md:ml-64 ml-0 p-4 md:p-8 w-full min-h-screen">
         <div className="md:hidden h-12"></div>
-        {children}
+        {children || <Outlet />}
       </main>
     </div>
   );

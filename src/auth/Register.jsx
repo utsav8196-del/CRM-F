@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import authService from "../services/authService";
 
 function Registration() {
   const [formData, setFormData] = useState({
@@ -32,39 +33,29 @@ function Registration() {
     if (!formData.password.trim()) {
       newErrors.password = "Password is required";
     }
+    if (formData.password !== formData.rePassword) {
+      newErrors.rePassword = "Passwords do not match";
+    }
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      // Handle form submission here
-      console.log("Form submitted:", formData);
       try {
         const { firstName, email, password } = formData;
+        const response = await authService.register({
+          firstName,
+          email,
+          password,
+        });
+        const json = response.data;
 
-        const response = await fetch(
-          "http://localhost:5000/api/auth/register",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              firstName,
-              email,
-              password,
-            }),
-          }
-        );
-        const json = await response.json();
-        console.log("json", json);
-        if (json) {
-          localStorage.setItem("token", json.authtoken);
-          navigate("/login");
-        } else {
-          navigate("/signup");
-          throw new Error(json.message || "User Already Exists...");
-        }
+        toast.success(json.message || "User registered successfully");
+        navigate("/login", { replace: true });
       } catch (error) {
-        toast.error(error.message || "User Already Exists...", {
+        toast.error(
+          error.response?.data?.message ||
+            error.message ||
+            "User registration failed",
+          {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
@@ -73,7 +64,8 @@ function Registration() {
           draggable: true,
           progress: undefined,
           theme: "colored",
-        });
+          }
+        );
       }
     }
   };
@@ -145,6 +137,27 @@ function Registration() {
             />
             {errors.password && (
               <p className="text-red-500 mt-1 text-sm">{errors.password}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-white mb-1">Confirm Password</label>
+            <input
+              type="password"
+              name="rePassword"
+              value={formData.rePassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              className={`w-full p-3 rounded-lg outline-none ${
+                errors.rePassword
+                  ? "border-2 border-red-500"
+                  : formData.rePassword
+                  ? "border-2 border-green-500"
+                  : "border border-gray-300"
+              }`}
+            />
+            {errors.rePassword && (
+              <p className="text-red-500 mt-1 text-sm">{errors.rePassword}</p>
             )}
           </div>
 

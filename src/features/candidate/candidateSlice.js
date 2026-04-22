@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { candidateService } from '../../services/candidateService';
 
+const getApiErrorMessage = (error, fallbackMessage) =>
+  error.response?.data?.error ||
+  error.response?.data?.message ||
+  error.message ||
+  fallbackMessage;
+
 // Async thunks
 export const fetchCandidates = createAsyncThunk(
   'candidates/fetchCandidates',
@@ -12,7 +18,7 @@ export const fetchCandidates = createAsyncThunk(
       }
       return rejectWithValue(response.data?.message || 'Failed to fetch candidates');
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch candidates');
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to fetch candidates'));
     }
   }
 );
@@ -27,7 +33,7 @@ export const addCandidate = createAsyncThunk(
       }
       return rejectWithValue(response.data?.message || 'Failed to add candidate');
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to add candidate');
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to add candidate'));
     }
   }
 );
@@ -42,7 +48,7 @@ export const updateCandidate = createAsyncThunk(
       }
       return rejectWithValue(response.data?.message || 'Failed to update candidate');
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update candidate');
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to update candidate'));
     }
   }
 );
@@ -57,7 +63,7 @@ export const deleteCandidate = createAsyncThunk(
       }
       return rejectWithValue(response.data?.message || 'Failed to delete candidate');
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to delete candidate');
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to delete candidate'));
     }
   }
 );
@@ -72,7 +78,7 @@ export const updateCandidateStatus = createAsyncThunk(
       }
       return rejectWithValue(response.data?.message || 'Failed to update candidate status');
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update candidate status');
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to update candidate status'));
     }
   }
 );

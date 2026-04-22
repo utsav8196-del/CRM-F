@@ -16,6 +16,7 @@ const initialFormState = {
   name: "",
   email: "",
   phone: "",
+  position: "",
   status: "",
 };
 
@@ -75,6 +76,7 @@ export default function Candidates() {
       name: candidate.name || "",
       email: candidate.email || "",
       phone: candidate.phone || "",
+      position: candidate.position || "",
       status: candidate.status || "",
     });
     setIsModalOpen(true);
@@ -107,7 +109,7 @@ export default function Candidates() {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case INTERVIEW_ROUNDS.PENDING:
+      case "Pending":
         return "badge-warning";
       case "Scheduled":
         return "badge-info";
@@ -426,6 +428,21 @@ export default function Candidates() {
                   type="text"
                   placeholder="Enter phone number"
                   className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-6 box-border-sizing-border-box rounded-xl"
+                  required
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold">Position :-</span>
+                </label>
+                <input
+                  name="position"
+                  value={form.position}
+                  onChange={handleChange}
+                  type="text"
+                  placeholder="Enter position"
+                  className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary rounded-xl"
                   required
                 />
               </div>

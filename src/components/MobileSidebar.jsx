@@ -1,7 +1,9 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../utils/auth";
 
 export default function MobileSidebar({ isOpen, onClose }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const menu = [
     { name: "Dashboard", path: "/" },
@@ -10,6 +12,12 @@ export default function MobileSidebar({ isOpen, onClose }) {
     { name: "Upcoming Interviews", path: "/upcoming-interviews" },
     { name: "Settings", path: "/settings" },
   ];
+
+  const handleLogout = () => {
+    logout();
+    onClose();
+    navigate("/login", { replace: true });
+  };
 
   if (!isOpen) return null;
 
@@ -41,6 +49,13 @@ export default function MobileSidebar({ isOpen, onClose }) {
             </div>
           </Link>
         ))}
+
+        <button
+          className="mt-6 w-full rounded bg-red-600 px-4 py-2 text-white transition hover:bg-red-500"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
       </aside>
     </div>
   );

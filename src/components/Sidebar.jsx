@@ -37,10 +37,12 @@
 //     </aside>
 //   );
 // }
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../utils/auth";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const menu = [
     { name: "Dashboard", path: "/" },
@@ -49,6 +51,11 @@ export default function Sidebar() {
     { name: "Upcoming Interviews", path: "/upcoming-interviews" }, 
     { name: "Settings", path: "/settings" },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <aside className="hidden md:block w-64 fixed h-screen shadow-md p-6 overflow-y-auto bg-gradient-to-b from-gray-900 via-gray-950 to-black text-white">
@@ -70,10 +77,7 @@ export default function Sidebar() {
 
       <button
         className="mt-115 w-full bg-red-600 text-white py-2 hover:bg-red-500 rounded"
-        onClick={() => {
-          localStorage.removeItem("token");
-          window.location.reload();
-        }}
+        onClick={handleLogout}
       >
         Logout
       </button>

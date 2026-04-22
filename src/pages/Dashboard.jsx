@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -18,9 +19,11 @@ import {
   selectDashboardLoading,
   selectDashboardError,
 } from "../features/dashboard/dashboardSelectors";
+import { logout } from "../utils/auth";
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const dashboardData = useAppSelector(selectDashboardData);
   const loading = useAppSelector(selectDashboardLoading);
   const error = useAppSelector(selectDashboardError);
@@ -38,6 +41,11 @@ export default function Dashboard() {
 
   const handleRefresh = () => {
     dispatch(fetchDashboardData());
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
   };
 
   const initialLoading = loading && !dashboardData;
@@ -201,6 +209,9 @@ export default function Dashboard() {
             )}
             Refresh
           </button>
+          <button className="btn btn-sm btn-error" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
 
@@ -350,7 +361,7 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-base-100 p-6 rounded-xl shadow-lg">
+        <div className="lg:col-span-2 min-w-0 bg-base-100 p-6 rounded-xl shadow-lg">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">Interview Trends</h3>
             <div className="flex gap-2">
@@ -359,7 +370,7 @@ export default function Dashboard() {
               <button className="btn btn-sm btn-ghost">Yearly</button>
             </div>
           </div>
-          <div className="w-full h-72">
+          <div className="w-full min-w-0 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={charts.monthlyStats}>
                 <CartesianGrid
@@ -410,9 +421,9 @@ export default function Dashboard() {
         </div>
 
         {/* Status Distribution */}
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg">
+        <div className="min-w-0 bg-base-100 p-6 rounded-xl shadow-lg">
           <h3 className="text-xl font-semibold mb-6">Status Distribution</h3>
-          <div className="h-64">
+          <div className="w-full min-w-0 h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
