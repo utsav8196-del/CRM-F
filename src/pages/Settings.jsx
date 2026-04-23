@@ -1,60 +1,83 @@
 import { useState } from "react";
+import {
+  BellRing,
+  LockKeyhole,
+  Save,
+  Shield,
+  UserCircle2,
+} from "lucide-react";
 import useToast from "../hooks/useToast";
+
+function SectionCard({ icon: Icon, kicker, title, description, children }) {
+  return (
+    <section className="crm-panel p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            {kicker}
+          </p>
+          <h3 className="mt-2 text-2xl font-bold text-slate-950">{title}</h3>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6">{children}</div>
+    </section>
+  );
+}
 
 export default function Settings() {
   const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
-  
-  // Profile state
+
   const [profile, setProfile] = useState({
     fullName: "",
     email: "",
     phone: "",
     department: "",
-    position: ""
+    position: "",
   });
 
-  // Password state
   const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
-  // Notifications state
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
     candidateAlerts: true,
     interviewReminders: true,
     statusUpdates: true,
-    dailyDigest: false
+    dailyDigest: false,
   });
 
-  // Handle profile changes
   const handleProfileChange = (field, value) => {
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  // Handle password changes
   const handlePasswordChange = (field, value) => {
-    setPasswords(prev => ({
+    setPasswords((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  // Handle notification toggles
   const handleNotificationToggle = (field) => {
-    setNotifications(prev => ({
+    setNotifications((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
-  // Save profile
   const handleSaveProfile = async () => {
     if (!profile.fullName || !profile.email) {
       showError("Please fill in all required fields");
@@ -63,17 +86,15 @@ export default function Settings() {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       showSuccess("Profile updated successfully!");
-    } catch (err) {
+    } catch {
       showError("Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
 
-  // Update password
   const handleUpdatePassword = async () => {
     if (!passwords.currentPassword || !passwords.newPassword) {
       showError("Please fill in all password fields");
@@ -87,29 +108,26 @@ export default function Settings() {
 
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       showSuccess("Password updated successfully!");
       setPasswords({
         currentPassword: "",
         newPassword: "",
-        confirmPassword: ""
+        confirmPassword: "",
       });
-    } catch (err) {
+    } catch {
       showError("Failed to update password");
     } finally {
       setLoading(false);
     }
   };
 
-  // Save notifications
   const handleSaveNotifications = async () => {
     setLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       showSuccess("Notification preferences saved!");
-    } catch (err) {
+    } catch {
       showError("Failed to save notifications");
     } finally {
       setLoading(false);
@@ -117,74 +135,93 @@ export default function Settings() {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-800">Settings</h2>
-          <p className="text-gray-600 mt-2">Manage your account settings and preferences</p>
-        </div>
-      </div>
-
-      {/* Profile Settings */}
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg border border-base-300">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-primary rounded-lg">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+    <div className="space-y-6">
+      <section className="crm-shell overflow-hidden p-6 sm:p-8">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-3xl">
+            <span className="crm-kicker">Workspace Settings</span>
+            <h2 className="mt-4 text-3xl font-bold text-slate-950 sm:text-5xl">
+              Tune the workspace around your team, security, and daily rhythm.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+              Update profile details, strengthen account security, and control
+              hiring notifications from a single responsive settings experience.
+            </p>
           </div>
-          <h3 className="text-xl font-semibold">Profile Information</h3>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Full Name :-</span>
-            </label>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div className="rounded-[24px] border border-white/80 bg-white/82 p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Profile
+              </p>
+              <p className="mt-3 text-3xl font-bold text-slate-950">01</p>
+            </div>
+            <div className="rounded-[24px] border border-white/80 bg-white/82 p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Security
+              </p>
+              <p className="mt-3 text-3xl font-bold text-slate-950">02</p>
+            </div>
+            <div className="rounded-[24px] border border-white/80 bg-white/82 p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Notifications
+              </p>
+              <p className="mt-3 text-3xl font-bold text-slate-950">03</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <SectionCard
+        icon={UserCircle2}
+        kicker="Profile"
+        title="Profile information"
+        description="Keep your account details current so the workspace feels personal and easy to trust."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="crm-label">Full Name</label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-24 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               placeholder="Enter your full name"
               value={profile.fullName}
-              onChange={(e) => handleProfileChange('fullName', e.target.value)}
+              onChange={(event) =>
+                handleProfileChange("fullName", event.target.value)
+              }
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Email :-</span>
-            </label>
+          <div>
+            <label className="crm-label">Email</label>
             <input
               type="email"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-22 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               placeholder="your@email.com"
               value={profile.email}
-              onChange={(e) => handleProfileChange('email', e.target.value)}
+              onChange={(event) => handleProfileChange("email", event.target.value)}
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Phone Number :-</span>
-            </label>
+          <div>
+            <label className="crm-label">Phone Number</label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-15 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               placeholder="+91 9876543210"
               value={profile.phone}
-              onChange={(e) => handleProfileChange('phone', e.target.value)}
+              onChange={(event) => handleProfileChange("phone", event.target.value)}
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Department :-</span>
-            </label>
-            <select 
-              className="select select-bordered focus:outline-none focus:ring-2 focus:ring-primary left-10 box-border-sizing-border-box rounded-xl"
+          <div>
+            <label className="crm-label">Department</label>
+            <select
+              className="crm-select"
               value={profile.department}
-              onChange={(e) => handleProfileChange('department', e.target.value)}
+              onChange={(event) =>
+                handleProfileChange("department", event.target.value)
+              }
             >
               <option value="">Select Department</option>
               <option value="hr">Human Resources</option>
@@ -194,392 +231,156 @@ export default function Settings() {
             </select>
           </div>
 
-          <div className="form-control md:col-span-2">
-            <label className="label">
-              <span className="label-text font-semibold">Position :-</span>
-            </label>
+          <div className="md:col-span-2">
+            <label className="crm-label">Position</label>
             <input
               type="text"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-28 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               placeholder="Your position in company"
               value={profile.position}
-              onChange={(e) => handleProfileChange('position', e.target.value)}
+              onChange={(event) =>
+                handleProfileChange("position", event.target.value)
+              }
             />
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <button 
-            className="btn btn-primary"
+        <div className="mt-6 flex justify-end">
+          <button
+            className="crm-button-primary"
             onClick={handleSaveProfile}
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span className="loading loading-spinner loading-sm"></span>
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
+            <Save className="h-[18px] w-[18px]" />
+            {loading ? "Saving..." : "Save Changes"}
           </button>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Change Password */}
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg border border-base-300">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-secondary rounded-lg">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold">Change Password</h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Current Password :-</span>
-            </label>
+      <SectionCard
+        icon={LockKeyhole}
+        kicker="Security"
+        title="Password management"
+        description="Keep access secure with a cleaner, more confident password update flow."
+      >
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="crm-label">Current Password</label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-21 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               value={passwords.currentPassword}
-              onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
+              onChange={(event) =>
+                handlePasswordChange("currentPassword", event.target.value)
+              }
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">New Password :-</span>
-            </label>
+          <div>
+            <label className="crm-label">New Password</label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-15 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               value={passwords.newPassword}
-              onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+              onChange={(event) =>
+                handlePasswordChange("newPassword", event.target.value)
+              }
             />
           </div>
 
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-semibold">Confirm New Password :-</span>
-            </label>
+          <div className="md:col-span-2">
+            <label className="crm-label">Confirm New Password</label>
             <input
               type="password"
-              className="input input-bordered focus:outline-none focus:ring-2 focus:ring-primary left-10 box-border-sizing-border-box rounded-xl"
+              className="crm-field"
               value={passwords.confirmPassword}
-              onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+              onChange={(event) =>
+                handlePasswordChange("confirmPassword", event.target.value)
+              }
             />
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <button 
-            className="btn btn-secondary"
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="rounded-[20px] border border-slate-100 bg-slate-50/80 px-4 py-3 text-sm text-slate-600">
+            Changing the password will help keep hiring activity and candidate
+            records protected.
+          </div>
+
+          <button
+            className="crm-button-primary"
             onClick={handleUpdatePassword}
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span className="loading loading-spinner loading-sm"></span>
-                Updating...
-              </>
-            ) : (
-              "Update Password"
-            )}
+            <Shield className="h-[18px] w-[18px]" />
+            {loading ? "Updating..." : "Update Password"}
           </button>
         </div>
-      </div>
+      </SectionCard>
 
-      {/* Notification Settings */}
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg border border-base-300">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-accent rounded-lg">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.24 8.56a5.97 5.97 0 01-.93-3.26 6 6 0 0111.75 2.33 6 6 0 01-2.13 4.12M4.93 4.93A9.98 9.98 0 001 12.73c0 2.13.78 4.07 2.07 5.55" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold bg-g bg-base-100 m-0.5 border border-base-300 rounded-xl p-2">Notification Preferences</h3>
+      <SectionCard
+        icon={BellRing}
+        kicker="Notifications"
+        title="Notification preferences"
+        description="Choose which updates deserve your attention and keep the signal higher than the noise."
+      >
+        <div className="space-y-3">
+          {[
+            {
+              key: "emailNotifications",
+              title: "Email Notifications",
+              description: "Receive email updates about system activities",
+            },
+            {
+              key: "candidateAlerts",
+              title: "New Candidate Alerts",
+              description: "Get notified when new candidates are added",
+            },
+            {
+              key: "interviewReminders",
+              title: "Interview Reminders",
+              description: "Reminders for upcoming interviews",
+            },
+            {
+              key: "statusUpdates",
+              title: "Status Updates",
+              description: "Notifications when candidate status changes",
+            },
+            {
+              key: "dailyDigest",
+              title: "Daily Digest",
+              description: "Daily summary of interview activities",
+            },
+          ].map((item) => (
+            <div
+              key={item.key}
+              className="flex flex-col gap-4 rounded-[22px] border border-white/80 bg-white/82 p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div>
+                <h4 className="font-semibold text-slate-900">{item.title}</h4>
+                <p className="mt-1 text-sm text-slate-600">{item.description}</p>
+              </div>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary"
+                checked={notifications[item.key]}
+                onChange={() => handleNotificationToggle(item.key)}
+              />
+            </div>
+          ))}
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
-            <div>
-              <h4 className="font-semibold">Email Notifications</h4>
-              <p className="text-sm text-gray-600">Receive email updates about system activities</p>
-            </div>
-            <input 
-              type="checkbox" 
-              className="toggle toggle-primary"
-              checked={notifications.emailNotifications}
-              onChange={() => handleNotificationToggle('emailNotifications')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
-            <div>
-              <h4 className="font-semibold">New Candidate Alerts</h4>
-              <p className="text-sm text-gray-600">Get notified when new candidates are added</p>
-            </div>
-            <input 
-              type="checkbox" 
-              className="toggle toggle-primary"
-              checked={notifications.candidateAlerts}
-              onChange={() => handleNotificationToggle('candidateAlerts')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
-            <div>
-              <h4 className="font-semibold">Interview Reminders</h4>
-              <p className="text-sm text-gray-600">Reminders for upcoming interviews</p>
-            </div>
-            <input 
-              type="checkbox" 
-              className="toggle toggle-primary"
-              checked={notifications.interviewReminders}
-              onChange={() => handleNotificationToggle('interviewReminders')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
-            <div>
-              <h4 className="font-semibold">Status Updates</h4>
-              <p className="text-sm text-gray-600">Notifications when candidate status changes</p>
-            </div>
-            <input 
-              type="checkbox" 
-              className="toggle toggle-primary"
-              checked={notifications.statusUpdates}
-              onChange={() => handleNotificationToggle('statusUpdates')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-4 bg-base-200 rounded-lg">
-            <div>
-              <h4 className="font-semibold">Daily Digest</h4>
-              <p className="text-sm text-gray-600">Daily summary of interview activities</p>
-            </div>
-            <input 
-              type="checkbox" 
-              className="toggle toggle-primary"
-              checked={notifications.dailyDigest}
-              onChange={() => handleNotificationToggle('dailyDigest')}
-            />
-          </div>
-        </div>
-
-        <div className="flex justify-end mt-6">
-          <button 
-            className="btn btn-accent"
+        <div className="mt-6 flex justify-end">
+          <button
+            className="crm-button-primary"
             onClick={handleSaveNotifications}
             disabled={loading}
           >
-            {loading ? (
-              <>
-                <span className="loading loading-spinner loading-sm"></span>
-                Saving...
-              </>
-            ) : (
-              "Save Preferences"
-            )}
+            <BellRing className="h-[18px] w-[18px]" />
+            {loading ? "Saving..." : "Save Preferences"}
           </button>
         </div>
-      </div>
+      </SectionCard>
     </div>
   );
 }
-
-
-
-
-
-// import { useState } from "react";
-// import useToast from "../hooks/useToast";
-
-// export default function Settings() {
-//   const { showSuccess, showError } = useToast();
-//   const [loading, setLoading] = useState(false);
-//   const [activeTab, setActiveTab] = useState("profile");
-
-//   const [profile, setProfile] = useState({
-//     fullName: "",
-//     email: "",
-//     phone: "",
-//     department: "",
-//     position: ""
-//   });
-
-//   const [passwords, setPasswords] = useState({
-//     currentPassword: "",
-//     newPassword: "",
-//     confirmPassword: ""
-//   });
-
-//   const [notifications, setNotifications] = useState({
-//     emailNotifications: true,
-//     candidateAlerts: true,
-//     interviewReminders: true,
-//     statusUpdates: true,
-//     dailyDigest: false
-//   });
-
-//   const passwordStrength =
-//     passwords.newPassword.length > 10
-//       ? "Strong"
-//       : passwords.newPassword.length > 5
-//       ? "Medium"
-//       : "Weak";
-
-//   const Card = ({ title, children }) => (
-//     <div className="bg-base-100 rounded-2xl p-6 shadow-xl border border-base-300 animate-fade-in">
-//       <h3 className="text-xl font-bold mb-6">{title}</h3>
-//       {children}
-//     </div>
-//   );
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-base-200 via-base-100 to-base-200 p-6 md:p-10">
-
-//       <div className="mb-8 rounded-2xl bg-gradient-to-r from-primary to-secondary p-6 text-white shadow-xl">
-//         <h2 className="text-3xl font-bold">Account Settings</h2>
-//         <p className="opacity-90">Manage profile, security & notifications</p>
-//       </div>
-
-//       <div className="tabs tabs-boxed mb-8 bg-base-200 p-2 rounded-xl">
-//         {["profile", "security", "notifications"].map(tab => (
-//           <button
-//             key={tab}
-//             onClick={() => setActiveTab(tab)}
-//             className={`tab capitalize transition-all ${
-//               activeTab === tab ? "tab-active font-semibold" : ""
-//             }`}
-//           > 
-//             {tab}
-//           </button>
-//         ))}
-//       </div>
-
-//       {activeTab === "profile" && (
-//         <Card title="Profile Information">
-//           <div className="flex items-center gap-6 mb-8">
-//             <div className="avatar">
-//               <div className="w-20 rounded-full ring ring-primary ring-offset-2">
-//                 <img src="https://i.pravatar.cc/150" alt="avatar" />
-//               </div>
-//             </div>
-//             <button className="btn btn-outline btn-primary btn-sm">
-//               Change Avatar
-//             </button>
-//           </div>
-
-//           <div className="grid md:grid-cols-2 gap-6">
-//             {Object.entries(profile).map(([key, value]) => (
-//               <div key={key} className="form-control">
-//                 <label className="label font-semibold capitalize">
-//                   {key.replace(/([A-Z])/g, " $1")}
-//                 </label>
-//                 <input
-//                   value={value}
-//                   onChange={e =>
-//                     setProfile({ ...profile, [key]: e.target.value })
-//                   }
-//                   className="input input-bordered focus:ring-2 focus:ring-primary"
-//                 />
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="flex justify-end mt-8 sticky bottom-4">
-//             <button
-//               className="btn btn-primary px-10 hover:scale-105 transition"
-//               disabled={loading}
-//               onClick={() => showSuccess("Profile Saved")}
-//             >
-//               Save Profile
-//             </button>
-//           </div>
-//         </Card>
-//       )}
-
-//       {activeTab === "security" && (
-//         <Card title="Security Settings">
-//           <div className="grid md:grid-cols-2 gap-6">
-//             {Object.entries(passwords).map(([key, value]) => (
-//               <div key={key} className="form-control">
-//                 <label className="label font-semibold capitalize">
-//                   {key.replace(/([A-Z])/g, " $1")}
-//                 </label>
-//                 <input
-//                   type="password"
-//                   value={value}
-//                   onChange={e =>
-//                     setPasswords({ ...passwords, [key]: e.target.value })
-//                   }
-//                   className="input input-bordered focus:ring-2 focus:ring-secondary"
-//                 />
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="mt-4">
-//             <span className="text-sm font-semibold">Password Strength:</span>
-//             <span
-//               className={`ml-2 badge ${
-//                 passwordStrength === "Strong"
-//                   ? "badge-success"
-//                   : passwordStrength === "Medium"
-//                   ? "badge-warning"
-//                   : "badge-error"
-//               }`}
-//             >
-//               {passwordStrength}
-//             </span>
-//           </div>
-
-//           <div className="flex justify-end mt-8">
-//             <button className="btn btn-secondary px-10">
-//               Update Password
-//             </button>
-//           </div>
-//         </Card>
-//       )}
-
-//       {activeTab === "notifications" && (
-//         <Card title="Notification Preferences">
-//           <div className="space-y-4">
-//             {Object.entries(notifications).map(([key, value]) => (
-//               <div
-//                 key={key}
-//                 className="flex items-center justify-between p-4 rounded-xl bg-base-200 hover:bg-base-300 transition"
-//               >
-//                 <span className="font-medium capitalize">
-//                   {key.replace(/([A-Z])/g, " $1")}
-//                 </span>
-//                 <input
-//                   type="checkbox"
-//                   className="toggle toggle-accent"
-//                   checked={value}
-//                   onChange={() =>
-//                     setNotifications({
-//                       ...notifications,
-//                       [key]: !value
-//                     })
-//                   }
-//                 />
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="flex justify-end mt-8">
-//             <button className="btn btn-accent px-10">
-//               Save Preferences
-//             </button>
-//           </div>
-//         </Card>
-//       )}
-//     </div>
-//   );
-// }

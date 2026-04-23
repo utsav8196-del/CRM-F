@@ -1,17 +1,30 @@
+import {
+  CalendarClock,
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+  X,
+} from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
+
+const menu = [
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
+  { name: "Candidates", path: "/candidates", icon: Users },
+  { name: "Interviews", path: "/interviews", icon: CalendarClock },
+  {
+    name: "Upcoming Interviews",
+    path: "/upcoming-interviews",
+    icon: CalendarDays,
+  },
+  { name: "Settings", path: "/settings", icon: Settings },
+];
 
 export default function MobileSidebar({ isOpen, onClose }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const menu = [
-    { name: "Dashboard", path: "/" },
-    { name: "Candidates", path: "/candidates" },
-    { name: "Interviews", path: "/interviews" },
-    { name: "Upcoming Interviews", path: "/upcoming-interviews" },
-    { name: "Settings", path: "/settings" },
-  ];
 
   const handleLogout = () => {
     logout();
@@ -22,40 +35,69 @@ export default function MobileSidebar({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose}></div>
+    <div className="fixed inset-0 z-50 lg:hidden">
+      <div className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={onClose} />
 
-      <aside className="absolute left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 via-gray-950 to-black text-white shadow-xl p-6 overflow-y-auto">
-        <button
-          className="mb-4 text-sm px-3 py-1 rounded bg-gray-800 hover:bg-gray-700"
-          onClick={onClose}
-          aria-label="Close sidebar"
-        >
-          Close
-        </button>
-
-        <h1 className="text-xl font-bold mb-6">Interview System</h1>
-
-        {menu.map((item) => (
-          <Link key={item.path} to={item.path} onClick={onClose}>
-            <div
-              className={`p-3 rounded-lg mb-3 cursor-pointer transition-all ${
-                pathname === item.path
-                  ? "bg-indigo-600 text-white shadow-md"
-                  : "hover:bg-gray-800 text-gray-300 hover:text-white"
-              }`}
-            >
-              {item.name}
+      <aside className="absolute inset-y-0 left-0 w-[88%] max-w-sm p-4">
+        <div className="crm-panel-dark flex h-full flex-col overflow-hidden p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.24em] text-slate-400">
+                Talent Command
+              </p>
+              <h2 className="mt-2 text-2xl font-bold text-white">HR CRM</h2>
+              <p className="mt-2 text-sm text-slate-300">
+                Navigate the hiring workspace from one clean mobile hub.
+              </p>
             </div>
-          </Link>
-        ))}
 
-        <button
-          className="mt-6 w-full rounded bg-red-600 px-4 py-2 text-white transition hover:bg-red-500"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+            <button
+              type="button"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-white"
+              onClick={onClose}
+              aria-label="Close sidebar"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <nav className="mt-8 flex-1 space-y-2">
+            {menu.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.path;
+
+              return (
+                <Link key={item.path} to={item.path} onClick={onClose}>
+                  <div
+                    className={`flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-medium transition ${
+                      active
+                        ? "bg-white text-slate-950 shadow-lg shadow-black/10"
+                        : "text-slate-300 hover:bg-white/8 hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
+                        active ? "bg-slate-950 text-white" : "bg-white/8"
+                      }`}
+                    >
+                      <Icon className="h-[18px] w-[18px]" />
+                    </span>
+                    <span>{item.name}</span>
+                  </div>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <button
+            type="button"
+            className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/20 bg-rose-500/12 px-4 py-3 text-sm font-semibold text-rose-100"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-[18px] w-[18px]" />
+            Logout
+          </button>
+        </div>
       </aside>
     </div>
   );

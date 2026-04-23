@@ -1,25 +1,120 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  LineChart,
+  CartesianGrid,
+  Cell,
   Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from "recharts";
+import {
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  CalendarClock,
+  CheckCircle2,
+  RefreshCcw,
+  ShieldCheck,
+  Users2,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchDashboardData } from "../features/dashboard/dashboardSlice";
 import {
   selectDashboardData,
-  selectDashboardLoading,
   selectDashboardError,
+  selectDashboardLoading,
 } from "../features/dashboard/dashboardSelectors";
 import { logout } from "../utils/auth";
+
+const getStatusBadgeClass = (status) => {
+  switch (status) {
+    case "Scheduled":
+      return "bg-sky-100 text-sky-700 border-sky-200";
+    case "Pending":
+      return "bg-amber-100 text-amber-700 border-amber-200";
+    case "Completed":
+      return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "Rejected":
+      return "bg-rose-100 text-rose-700 border-rose-200";
+    default:
+      return "bg-slate-100 text-slate-600 border-slate-200";
+  }
+};
+
+const getInterviewBadgeClass = (type) => {
+  switch (type) {
+    case "1st Round":
+      return "bg-slate-950 text-white border-slate-950";
+    case "2nd Round":
+      return "bg-teal-100 text-teal-700 border-teal-200";
+    case "Final Round":
+      return "bg-orange-100 text-orange-700 border-orange-200";
+    default:
+      return "bg-slate-100 text-slate-600 border-slate-200";
+  }
+};
+
+const calculatePercentageChange = (current, previous = 0) => {
+  if (previous === 0) {
+    return { value: 0, isPositive: true };
+  }
+
+  const change = ((current - previous) / previous) * 100;
+  return {
+    value: Math.abs(Math.round(change)),
+    isPositive: change >= 0,
+  };
+};
+
+function StatCard({ title, value, change, icon: Icon, accentClass }) {
+  return (
+    <div className="crm-stat-card">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            {title}
+          </p>
+          <p className="mt-4 text-3xl font-bold text-slate-950 sm:text-4xl">
+            {value}
+          </p>
+          <div
+            className={`mt-4 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${accentClass}`}
+          >
+            {change.isPositive ? (
+              <ArrowUpRight className="h-4 w-4" />
+            ) : (
+              <ArrowDownRight className="h-4 w-4" />
+            )}
+            {change.value}% vs previous period
+          </div>
+        </div>
+
+        <div className="rounded-[22px] border border-white/80 bg-slate-950 p-3 text-white shadow-lg shadow-slate-950/15">
+          <Icon className="h-6 w-6" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, title, description }) {
+  return (
+    <div className="crm-empty min-h-56">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-950 text-white">
+        <Icon className="h-7 w-7" />
+      </div>
+      <h3 className="mt-5 text-lg font-semibold text-slate-800">{title}</h3>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
+        {description}
+      </p>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();
@@ -52,19 +147,20 @@ export default function Dashboard() {
 
   if (initialLoading) {
     return (
-      <div className="p-6 space-y-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-            <p className="text-base-content/60 mt-1">
-              Welcome to your interview management system
-            </p>
-          </div>
+      <div className="space-y-6">
+        <div className="crm-shell overflow-hidden p-6 sm:p-8">
+          <span className="crm-kicker">Dashboard Pulse</span>
+          <h2 className="mt-4 text-3xl font-bold text-slate-950 sm:text-4xl">
+            Dashboard Overview
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            Preparing your hiring analytics and current activity.
+          </p>
         </div>
-        <div className="flex justify-center items-center h-64">
+        <div className="crm-panel flex min-h-72 items-center justify-center">
           <div className="text-center">
-            <span className="loading loading-spinner loading-lg"></span>
-            <p className="mt-4 text-base-content/60">
+            <span className="loading loading-spinner loading-lg text-teal-600" />
+            <p className="mt-4 text-sm font-medium text-slate-600">
               Loading dashboard data...
             </p>
           </div>
@@ -75,76 +171,38 @@ export default function Dashboard() {
 
   if (error || !dashboardData) {
     return (
-      <div className="p-6 space-y-8">
-        <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-            <p className="text-base-content/60 mt-1">
-              Welcome to your interview management system
-            </p>
-          </div>
+      <div className="space-y-6">
+        <div className="crm-shell overflow-hidden p-6 sm:p-8">
+          <span className="crm-kicker">Dashboard Pulse</span>
+          <h2 className="mt-4 text-3xl font-bold text-slate-950 sm:text-4xl">
+            Dashboard Overview
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            We hit a problem while loading your workspace insights.
+          </p>
         </div>
-        <div className="alert alert-error">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{error}</span>
-          <button className="btn btn-sm btn-ghost" onClick={handleRefresh}>
-            Retry
-          </button>
+
+        <div className="crm-panel border border-rose-100 bg-rose-50/80 p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-rose-700">
+                Unable to load dashboard
+              </h3>
+              <p className="mt-1 text-sm text-rose-600">
+                {typeof error === "string" ? error : "Please try again shortly."}
+              </p>
+            </div>
+            <button className="crm-button-primary" onClick={handleRefresh}>
+              <RefreshCcw className="h-[18px] w-[18px]" />
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   const { stats, charts, recentCandidates, upcomingInterviews } = dashboardData;
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case "Scheduled":
-        return "badge-info";
-      case "Pending":
-        return "badge-warning";
-      case "Completed":
-        return "badge-success";
-      case "Rejected":
-        return "badge-error";
-      default:
-        return "badge-ghost";
-    }
-  };
-
-  const getInterviewBadge = (type) => {
-    switch (type) {
-      case "1st Round":
-        return "badge-primary";
-      case "2nd Round":
-        return "badge-secondary";
-      case "Final Round":
-        return "badge-accent";
-      default:
-        return "badge-ghost";
-    }
-  };
-
-  const calculatePercentageChange = (current, previous = 0) => {
-    if (previous === 0) return { value: 0, isPositive: true };
-    const change = ((current - previous) / previous) * 100;
-    return {
-      value: Math.abs(Math.round(change)),
-      isPositive: change >= 0,
-    };
-  };
 
   const previousStats = {
     totalCandidates: Math.max(0, stats.totalCandidates - 15),
@@ -165,274 +223,187 @@ export default function Dashboard() {
     stats.completedInterviews,
     previousStats.completedInterviews
   );
+  const pendingReviewsChange = calculatePercentageChange(
+    stats.pendingReviews,
+    previousStats.pendingReviews
+  );
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold">Dashboard Overview</h2>
-          <p className="text-base-content/60 mt-1 text-xl">
-            Welcome to your interview management system
-          </p>
-        </div>
-        <div className="flex items-center gap-4 ">
-          <div className="text-sm text-base-content/60">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
+    <div className="space-y-6 lg:space-y-8">
+      <section className="crm-shell overflow-hidden p-6 sm:p-8">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-3xl">
+            <span className="crm-kicker">Dashboard Pulse</span>
+            <h2 className="mt-4 text-3xl font-bold text-slate-950 sm:text-5xl">
+              Keep every hiring decision moving with clarity.
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
+              Review pipeline movement, recent candidate activity, and upcoming
+              interview pressure points from one responsive dashboard.
+            </p>
           </div>
-          <button
-            className="btn btn-sm btn-outline"
-            onClick={handleRefresh}
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              <svg
-                className="w-4 h-4"
-                
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-            )}
-            Refresh
-          </button>
-          <button className="btn btn-sm btn-error" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg border-l-4 border-primary">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="rounded-[24px] border border-slate-200/80 bg-slate-950 px-5 py-4 text-white shadow-lg shadow-slate-950/10">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400">
+                Today
+              </p>
+              <p className="mt-1 text-sm font-semibold">
+                {new Date().toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </p>
+            </div>
+
+            <button
+              className="crm-button-secondary"
+              onClick={handleRefresh}
+              disabled={loading}
+            >
+              <RefreshCcw className={`h-[18px] w-[18px] ${loading ? "animate-spin" : ""}`} />
+              {loading ? "Refreshing..." : "Refresh"}
+            </button>
+
+            <button className="crm-button-danger" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          title="Total Candidates"
+          value={stats.totalCandidates}
+          change={totalCandidatesChange}
+          icon={Users2}
+          accentClass={
+            totalCandidatesChange.isPositive
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-rose-200 bg-rose-50 text-rose-700"
+          }
+        />
+        <StatCard
+          title="Scheduled Interviews"
+          value={stats.scheduledInterviews}
+          change={scheduledInterviewsChange}
+          icon={CalendarClock}
+          accentClass={
+            scheduledInterviewsChange.isPositive
+              ? "border-sky-200 bg-sky-50 text-sky-700"
+              : "border-rose-200 bg-rose-50 text-rose-700"
+          }
+        />
+        <StatCard
+          title="Completed Interviews"
+          value={stats.completedInterviews}
+          change={completedInterviewsChange}
+          icon={CheckCircle2}
+          accentClass={
+            completedInterviewsChange.isPositive
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-rose-200 bg-rose-50 text-rose-700"
+          }
+        />
+        <StatCard
+          title="Pending Reviews"
+          value={stats.pendingReviews}
+          change={pendingReviewsChange}
+          icon={ShieldCheck}
+          accentClass={
+            pendingReviewsChange.isPositive
+              ? "border-amber-200 bg-amber-50 text-amber-700"
+              : "border-rose-200 bg-rose-50 text-rose-700"
+          }
+        />
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[1.6fr_0.9fr]">
+        <div className="crm-panel overflow-hidden p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h4 className="text-sm font-semibold text-base-content/60">
-                Total Candidates
-              </h4>
-              <p className="text-3xl font-bold mt-2">{stats.totalCandidates}</p>
-              <p
-                className={`text-sm mt-1 ${
-                  totalCandidatesChange.isPositive
-                    ? "text-success"
-                    : "text-error"
-                }`}
-              >
-                {totalCandidatesChange.isPositive ? "↑" : "↓"}{" "}
-                {totalCandidatesChange.value}% from previous 
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Performance
               </p>
+              <h3 className="mt-2 text-2xl font-bold text-slate-950">
+                Interview trends
+              </h3>
             </div>
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <svg
-                className="w-6 h-6 text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                />
-              </svg>
+            <div className="flex flex-wrap gap-2">
+              <span className="crm-pill bg-sky-50 text-sky-700 border-sky-200">
+                Monthly view
+              </span>
+              <span className="crm-pill">Auto refreshed every 2 minutes</span>
             </div>
           </div>
-        </div>
 
-        {/* Scheduled Interviews Card */}
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg border-l-4 border-info">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-sm font-semibold text-base-content/60">
-                Scheduled Interviews
-              </h4>
-              <p className="text-3xl font-bold mt-2">
-                {stats.scheduledInterviews}
-              </p>
-              <p
-                className={`text-sm mt-1 ${
-                  scheduledInterviewsChange.isPositive
-                    ? "text-success"  
-                    : "text-error"
-                }`}
-              >
-                {scheduledInterviewsChange.isPositive ? "↑" : "↓"}{" "}
-                {scheduledInterviewsChange.value}% from previous
-              </p>
-            </div>
-
-            <div className="bg-info/10 p-3 rounded-lg">
-              <svg
-                className="w-6 h-6 text-info"
-                fill="none"
-                stroke="currentColor"
-                
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Completed Interviews Card */}
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg border-l-4 border-success">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-sm font-semibold text-base-content/60">
-                Completed Interviews
-              </h4>
-              <p className="text-3xl font-bold mt-2">
-                {stats.completedInterviews}
-              </p>
-              <p
-                className={`text-sm mt-1 ${
-                  completedInterviewsChange.isPositive
-                    ? "text-success"
-                    : "text-error"
-                }`}
-              >
-                {completedInterviewsChange.isPositive ? "↑" : "↓"}{" "}
-                {completedInterviewsChange.value}% from previous
-              </p>
-            </div>
-            <div className="bg-success/10 p-3 rounded-lg">
-              <svg
-                className="w-6 h-6 text-success"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg border-l-4 border-warning">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-sm font-semibold text-base-content/60">
-                Pending Reviews
-              </h4>
-              <p className="text-3xl font-bold mt-2">{stats.pendingReviews}</p>
-              <p className="text-sm text-warning mt-1">Need attention</p>
-            </div>
-            <div className="bg-warning/10 p-3 rounded-lg">
-              <svg
-                className="w-6 h-6 text-warning"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 min-w-0 bg-base-100 p-6 rounded-xl shadow-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold">Interview Trends</h3>
-            <div className="flex gap-2">
-              <button className="btn btn-sm btn-outline">Monthly</button>
-              <button className="btn btn-sm btn-ghost">Quarterly</button>
-              <button className="btn btn-sm btn-ghost">Yearly</button>
-            </div>
-          </div>
-          <div className="w-full min-w-0 h-72">
+          <div className="mt-6 h-80 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={charts.monthlyStats}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke="#374151"
-                  opacity={0.3}
-                />
-                <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
-                <YAxis stroke="#6B7280" fontSize={12} />
+                <CartesianGrid strokeDasharray="4 4" stroke="#cbd5e1" />
+                <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
+                <YAxis stroke="#64748b" fontSize={12} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1F2937",
-                    border: "none",
-                    borderRadius: "8px",
-                    color: "#F9FAFB",
+                    backgroundColor: "#0f172a",
+                    borderRadius: "18px",
+                    border: "1px solid rgba(148,163,184,0.15)",
+                    color: "#f8fafc",
                   }}
                 />
                 <Line
                   type="monotone"
                   dataKey="interviews"
-                  stroke="#3B82F6"
+                  stroke="#0f766e"
                   strokeWidth={3}
-                  dot={{ fill: "#3B82F6", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, fill: "#1D4ED8" }}
+                  dot={{ fill: "#0f766e", strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 6, fill: "#115e59" }}
                 />
                 <Line
                   type="monotone"
                   dataKey="candidates"
-                  stroke="#10B981"
+                  stroke="#f97316"
                   strokeWidth={3}
-                  dot={{ fill: "#10B981", strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, fill: "#047857" }}
+                  dot={{ fill: "#f97316", strokeWidth: 0, r: 4 }}
+                  activeDot={{ r: 6, fill: "#ea580c" }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex gap-4 mt-4 justify-center">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-sm text-base-content/60">Interviews</span>
+
+          <div className="mt-4 flex flex-wrap gap-4">
+            <div className="crm-pill border-teal-200 bg-teal-50 text-teal-700">
+              <span className="mr-2 h-2.5 w-2.5 rounded-full bg-teal-600" />
+              Interviews
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-sm text-base-content/60">
-              </span>
+            <div className="crm-pill border-orange-200 bg-orange-50 text-orange-700">
+              <span className="mr-2 h-2.5 w-2.5 rounded-full bg-orange-500" />
+              Candidates
             </div>
           </div>
         </div>
 
-        {/* Status Distribution */}
-        <div className="min-w-0 bg-base-100 p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold mb-6">Status Distribution</h3>
-          <div className="w-full min-w-0 h-64">
+        <div className="crm-panel overflow-hidden p-5 sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Distribution
+          </p>
+          <h3 className="mt-2 text-2xl font-bold text-slate-950">
+            Status mix
+          </h3>
+
+          <div className="mt-4 h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={charts.statusDistribution}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
+                  innerRadius={62}
+                  outerRadius={92}
+                  paddingAngle={4}
                   dataKey="count"
                 >
                   {charts.statusDistribution.map((entry, index) => (
@@ -441,167 +412,168 @@ export default function Dashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#1F2937",
-                    border: "none",
-                    borderRadius: "8px",
-                    color: "#F9FAFB",
+                    backgroundColor: "#0f172a",
+                    borderRadius: "18px",
+                    border: "1px solid rgba(148,163,184,0.15)",
+                    color: "#f8fafc",
                   }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-2 mt-4">
+
+          <div className="mt-2 space-y-3">
             {charts.statusDistribution.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3"
               >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-full"
+                <div className="flex items-center gap-3">
+                  <span
+                    className="h-3.5 w-3.5 rounded-full"
                     style={{ backgroundColor: item.color }}
-                  ></div>
-                  <span>{item.status}</span>
+                  />
+                  <span className="text-sm font-medium text-slate-700">
+                    {item.status}
+                  </span>
                 </div>
-                <span className="font-semibold">{item.count}</span>
+                <span className="text-sm font-semibold text-slate-900">
+                  {item.count}
+                </span>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold">Recent Candidates</h3>
-            <button className="btn btn-sm btn-outline">View All</button>
+      <section className="grid gap-6 xl:grid-cols-2">
+        <div className="crm-panel p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Recent Activity
+              </p>
+              <h3 className="mt-2 text-2xl font-bold text-slate-950">
+                Recent candidates
+              </h3>
+            </div>
+            <span className="crm-pill">{recentCandidates?.length || 0} entries</span>
           </div>
-          <div className="space-y-4">
+
+          <div className="mt-5 space-y-3">
             {recentCandidates && recentCandidates.length > 0 ? (
               recentCandidates.map((candidate, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+                  className="rounded-[24px] border border-white/70 bg-white/80 p-4 shadow-sm"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="avatar placeholder">
-                      <div className="bg-neutral text-neutral-content rounded-full p-3 w-10">
-                        <span className="text-sm">{candidate.avatar}</span>
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-sm font-bold text-white">
+                        {candidate.avatar || candidate.name?.charAt(0)?.toUpperCase() || "?"}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {candidate.name}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {candidate.position}
+                        </p>
                       </div>
                     </div>
-                    <div>
-                      <div className="font-semibold">{candidate.name}</div>
-                      <div className="text-sm text-base-content/60">
-                        {candidate.position}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`badge ${getStatusBadge(candidate.status)}`}
-                    >
-                      {candidate.status}
-                    </span>
-                    <div className="text-xs text-base-content/60 mt-1">
-                      {candidate.date}
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(
+                          candidate.status
+                        )}`}
+                      >
+                        {candidate.status}
+                      </span>
+                      <span className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                        {candidate.date}
+                      </span>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-base-content/60">
-                <svg
-                  className="w-12 h-12 mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-                  />
-                </svg>
-                No candidates found
-              </div>
+              <EmptyState
+                icon={Users2}
+                title="No candidates found"
+                description="Once new candidates enter the pipeline, they will appear here for quick review."
+              />
             )}
           </div>
         </div>
 
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold">Upcoming Interviews</h3>
-            <button className="btn btn-sm btn-outline">View Calendar</button>
+        <div className="crm-panel p-5 sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Next Up
+              </p>
+              <h3 className="mt-2 text-2xl font-bold text-slate-950">
+                Upcoming interviews
+              </h3>
+            </div>
+            <span className="crm-pill">{upcomingInterviews?.length || 0} scheduled</span>
           </div>
-          <div className="space-y-4">
+
+          <div className="mt-5 space-y-3">
             {upcomingInterviews && upcomingInterviews.length > 0 ? (
               upcomingInterviews.map((interview, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+                  className="rounded-[24px] border border-white/70 bg-white/80 p-4 shadow-sm"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="bg-primary/10 p-2 rounded-lg">
-                      <svg
-                        className="w-5 h-5 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-600 text-white">
+                        <Activity className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {interview.candidate}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {interview.position}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs font-semibold ${getInterviewBadgeClass(
+                          interview.type
+                        )}`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-semibold">{interview.candidate}</div>
-                      <div className="text-sm text-base-content/60">
-                        {interview.position}
+                        {interview.type}
+                      </span>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-slate-900">
+                          {interview.time}
+                        </p>
+                        {interview.date && (
+                          <p className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                            {interview.date}
+                          </p>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`badge ${getInterviewBadge(interview.type)}`}
-                    >
-                      {interview.type}
-                    </span>
-                    <div className="text-sm font-semibold text-primary mt-1">
-                      {interview.time}
-                    </div>
-                    {interview.date && (
-                      <div className="text-xs text-base-content/60">
-                        {interview.date}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 text-base-content/60">
-                <svg
-                  className="w-12 h-12 mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                No upcoming interviews
-              </div>
+              <EmptyState
+                icon={CalendarClock}
+                title="No upcoming interviews"
+                description="Your next scheduled interviews will surface here so the team can stay aligned."
+              />
             )}
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

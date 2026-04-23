@@ -1,3 +1,4 @@
+import { ArrowRight, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -63,20 +64,54 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h1 className="card-title text-2xl">Sign in</h1>
-            <p className="text-sm opacity-70">
-              Log in first to open the dashboard and manage the CRM.
+    <div className="crm-auth-shell flex items-center justify-center">
+      <div className="crm-auth-card w-full">
+        <section className="crm-auth-hero">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.2),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.15),transparent_24%)]" />
+          <div className="relative z-10">
+            <span className="crm-kicker border-white/15 bg-white/10 text-white">
+              <ShieldCheck className="h-3.5 w-3.5" />
+              Secure Hiring Workspace
+            </span>
+
+            <h1 className="mt-6 text-4xl font-bold leading-tight text-white sm:text-5xl">
+              Run your recruitment flow from one sharp, focused dashboard.
+            </h1>
+
+            <p className="mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base">
+              Manage candidates, interviews, status movement, and daily hiring
+              signals with a calmer experience built for real HR teams.
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-3 space-y-3">
-              <label className="form-control w-full">
-                <div className="label">
-                  <span className="label-text">Email</span>
+            <div className="mt-8 space-y-3">
+              {[
+                "Track pipeline performance in real time",
+                "Organize interviews without losing candidate context",
+                "Move from scheduling to decisions with less friction",
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm text-slate-200">
+                  <CheckCircle2 className="mt-0.5 h-[18px] w-[18px] text-teal-300" />
+                  <span>{item}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="crm-auth-form">
+          <div className="mx-auto max-w-md">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+              Welcome Back
+            </p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950">Sign in</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              Access your hiring workspace and continue managing candidates with
+              confidence.
+            </p>
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              <div>
+                <label className="crm-label">Work Email</label>
                 <input
                   name="email"
                   type="email"
@@ -85,14 +120,12 @@ export default function Login() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@company.com"
-                  className="input input-bordered w-full"
+                  className="crm-field"
                 />
-              </label>
+              </div>
 
-              <label className="form-control w-full">
-                <div className="label">
-                  <span className="label-text">Password</span>
-                </div>
+              <div>
+                <label className="crm-label">Password</label>
                 <input
                   name="password"
                   type="password"
@@ -101,28 +134,32 @@ export default function Login() {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="input input-bordered w-full"
+                  className="crm-field"
                 />
-              </label>
+              </div>
 
               <button
                 type="submit"
-                className="btn btn-primary w-full"
+                className="crm-button-primary w-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Signing in..." : "Sign in"}
+                <span>{isSubmitting ? "Signing in..." : "Sign in"}</span>
+                {!isSubmitting && <ArrowRight className="h-[18px] w-[18px]" />}
               </button>
             </form>
 
-            <div className="mt-3 text-sm opacity-70">
-              <span>Need an account? </span>
-              <Link to="/register" className="link">
-                Register here
+            <div className="mt-6 rounded-2xl border border-slate-200/90 bg-slate-50/90 px-4 py-4 text-sm text-slate-600">
+              Need an account?{" "}
+              <Link
+                to="/register"
+                className="font-semibold text-teal-700 transition hover:text-teal-600"
+              >
+                Create one here
               </Link>
-              <span>.</span>
+              .
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

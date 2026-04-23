@@ -1,2 +1,217 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap");
 @import "tailwindcss";
 @plugin "daisyui";
+
+:root {
+  font-family: "Manrope", sans-serif;
+  color: #112031;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.2), transparent 32%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 28%),
+    linear-gradient(180deg, #f5f8f4 0%, #edf4ef 55%, #eaf1ef 100%);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.2), transparent 32%),
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 28%),
+    linear-gradient(180deg, #f5f8f4 0%, #edf4ef 55%, #eaf1ef 100%);
+  color: #112031;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), transparent 85%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Space Grotesk", sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply transition-all duration-200;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply border border-slate-200/80 bg-white/80 text-slate-900 shadow-sm backdrop-blur-sm;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(100 116 139 / 0.8);
+  }
+}
+
+@layer components {
+  .crm-page {
+    @apply relative z-10 min-h-screen px-4 py-5 md:px-8 md:py-8;
+  }
+
+  .crm-shell {
+    @apply rounded-[30px] border border-white/70 bg-white/75 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.4)] backdrop-blur-xl;
+  }
+
+  .crm-panel {
+    @apply rounded-[26px] border border-white/70 bg-white/78 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] backdrop-blur-xl;
+  }
+
+  .crm-panel-dark {
+    @apply rounded-[28px] border border-white/10 bg-slate-950/90 text-white shadow-[0_24px_80px_-32px_rgba(15,23,42,0.8)] backdrop-blur-xl;
+  }
+
+  .crm-kicker {
+    @apply inline-flex items-center gap-2 rounded-full border border-teal-900/10 bg-teal-600/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-teal-900/80;
+  }
+
+  .crm-title {
+    @apply text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl;
+  }
+
+  .crm-subtitle {
+    @apply mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base;
+  }
+
+  .crm-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-slate-950/20 hover:-translate-y-0.5 hover:bg-slate-800 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .crm-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200/90 bg-white/85 px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white;
+  }
+
+  .crm-button-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-rose-600/20 hover:-translate-y-0.5 hover:bg-rose-500;
+  }
+
+  .crm-field {
+    @apply w-full rounded-2xl border border-slate-200/90 bg-white/85 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none ring-0 placeholder:text-slate-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10;
+  }
+
+  .crm-select {
+    @apply w-full rounded-2xl border border-slate-200/90 bg-white/85 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10;
+  }
+
+  .crm-textarea {
+    @apply min-h-28 w-full rounded-2xl border border-slate-200/90 bg-white/85 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10;
+  }
+
+  .crm-label {
+    @apply mb-2 block text-sm font-semibold text-slate-700;
+  }
+
+  .crm-stat-card {
+    @apply relative overflow-hidden rounded-[26px] border border-white/70 bg-white/78 p-5 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] backdrop-blur-xl sm:p-6;
+  }
+
+  .crm-stat-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -20% -55% auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.45), transparent 60%);
+    pointer-events: none;
+  }
+
+  .crm-table-shell {
+    @apply overflow-hidden rounded-[28px] border border-white/80 bg-white/84 shadow-[0_24px_80px_-36px_rgba(15,23,42,0.35)] backdrop-blur-xl;
+  }
+
+  .crm-table-scroll {
+    @apply overflow-x-auto;
+  }
+
+  .crm-table-scroll table {
+    @apply min-w-full;
+  }
+
+  .crm-table-scroll thead th {
+    @apply whitespace-nowrap border-b border-slate-200/80 bg-slate-950 px-4 py-4 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-200;
+  }
+
+  .crm-table-scroll tbody td {
+    @apply border-b border-slate-100 px-4 py-4 align-top text-sm text-slate-700;
+  }
+
+  .crm-table-scroll tbody tr {
+    @apply bg-transparent transition hover:bg-teal-50/60;
+  }
+
+  .crm-pill {
+    @apply inline-flex items-center rounded-full border border-slate-200/80 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-700;
+  }
+
+  .crm-empty {
+    @apply flex flex-col items-center justify-center rounded-[26px] border border-white/70 bg-white/78 px-6 py-12 text-center text-slate-500 shadow-[0_18px_50px_-28px_rgba(15,23,42,0.35)] backdrop-blur-xl;
+  }
+
+  .crm-mobile-card {
+    @apply rounded-[24px] border border-white/75 bg-white/82 p-4 shadow-[0_20px_45px_-28px_rgba(15,23,42,0.4)] backdrop-blur-xl;
+  }
+
+  .crm-auth-shell {
+    @apply relative min-h-screen overflow-hidden px-4 py-8;
+  }
+
+  .crm-auth-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(13, 148, 136, 0.22), transparent 24%),
+      radial-gradient(circle at 85% 15%, rgba(249, 115, 22, 0.18), transparent 22%),
+      linear-gradient(145deg, #07141d 0%, #0f2c3b 45%, #123d4d 100%);
+  }
+
+  .crm-auth-card {
+    @apply relative mx-auto grid max-w-6xl overflow-hidden rounded-[30px] border border-white/70 bg-white/75 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.4)] backdrop-blur-xl md:grid-cols-[1.05fr_0.95fr];
+  }
+
+  .crm-auth-hero {
+    @apply relative overflow-hidden bg-slate-950 px-6 py-8 text-white sm:px-8 md:px-10 md:py-12;
+  }
+
+  .crm-auth-form {
+    @apply relative bg-white/88 px-6 py-8 sm:px-8 md:px-10 md:py-12;
+  }
+}

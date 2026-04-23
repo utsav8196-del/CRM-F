@@ -1,18 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import {
+  BriefcaseBusiness,
+  CircleOff,
+  ClockArrowUp,
+  Handshake,
+  ShieldAlert,
+  UserRoundCheck,
+} from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  fetchInterviews,
   addInterview,
-  updateInterview,
   deleteInterview as deleteInterviewThunk,
-  showModal,
+  fetchInterviews,
   hideModal,
+  showModal,
+  updateInterview,
 } from "../features/interviews/interviewsSlice";
 import {
   selectAllInterviews,
-  selectInterviewLoading,
   selectInterviewError,
+  selectInterviewLoading,
   selectModalState,
   selectSelectedInterview,
 } from "../features/interviews/interviewsSelectors";
@@ -32,7 +40,7 @@ const initialInterviewState = {
   time: "",
   meetingLink: "",
   status: "",
-  round: INTERVIEW_ROUNDS["PENDING"],
+  round: INTERVIEW_ROUNDS.PENDING,
   currentCTC: "",
   expectedCTC: "",
   totalExperience: "",
@@ -40,6 +48,24 @@ const initialInterviewState = {
   noticePeriod: "",
   currentCompany: "",
 };
+
+function RoundStatCard({ title, value, icon: Icon, accent }) {
+  return (
+    <div className="rounded-[24px] border border-white/80 bg-white/82 p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            {title}
+          </p>
+          <p className="mt-3 text-3xl font-bold text-slate-950">{value}</p>
+        </div>
+        <div className={`rounded-[20px] p-3 text-white ${accent}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Interviews() {
   const dispatch = useAppDispatch();
@@ -121,12 +147,9 @@ export default function Interviews() {
       const bValue = b[sortConfig.key] || "";
 
       if (
-        [
-          "currentCTC",
-          "expectedCTC",
-          "totalExperience",
-          "noticePeriod",
-        ].includes(sortConfig.key)
+        ["currentCTC", "expectedCTC", "totalExperience", "noticePeriod"].includes(
+          sortConfig.key
+        )
       ) {
         const numA = parseFloat(aValue) || 0;
         const numB = parseFloat(bValue) || 0;
@@ -138,40 +161,35 @@ export default function Interviews() {
       return 0;
     });
   };
+
   const pendingInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter((item) => item.round === INTERVIEW_ROUNDS["PENDING"])
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.PENDING)
     )
   );
   const firstRoundInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter((item) => item.round === INTERVIEW_ROUNDS["FIRSTROUND"])
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.FIRSTROUND)
     )
   );
-
   const secondRoundInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter(
-        (item) => item.round === INTERVIEW_ROUNDS["SECONDROUND"]
-      )
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.SECONDROUND)
     )
   );
-
   const finalRoundInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter((item) => item.round === INTERVIEW_ROUNDS["FINALROUND"])
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.FINALROUND)
     )
   );
-
   const hiredInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter((item) => item.round === INTERVIEW_ROUNDS["HIRED"])
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.HIRED)
     )
   );
-
   const rejectedInterviews = sortedInterviews(
     filterInterviewsBySearch(
-      interviews.filter((item) => item.round === INTERVIEW_ROUNDS["REJECTED"])
+      interviews.filter((item) => item.round === INTERVIEW_ROUNDS.REJECTED)
     )
   );
 
@@ -221,9 +239,7 @@ export default function Interviews() {
   };
 
   const handleStatusOrRoundUpdate = async (interviewId, updates) => {
-    const currentInterview = interviews.find(
-      (item) => item._id === interviewId
-    );
+    const currentInterview = interviews.find((item) => item._id === interviewId);
     if (!currentInterview) {
       showError("Interview not found");
       return;
@@ -280,7 +296,7 @@ export default function Interviews() {
   };
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="space-y-6">
       <InterviewHeader
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -290,43 +306,78 @@ export default function Interviews() {
         }}
       />
 
-      <div className="alert alert-info">
-        <div className="flex items-center">
-          <svg
-            className="w-6 h-6 mr-3"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z"
-            />
-          </svg>
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <RoundStatCard
+          title="1st Round"
+          value={firstRoundInterviews.length}
+          icon={BriefcaseBusiness}
+          accent="bg-slate-950"
+        />
+        <RoundStatCard
+          title="2nd Round"
+          value={secondRoundInterviews.length}
+          icon={ClockArrowUp}
+          accent="bg-teal-600"
+        />
+        <RoundStatCard
+          title="Final Round"
+          value={finalRoundInterviews.length}
+          icon={UserRoundCheck}
+          accent="bg-orange-500"
+        />
+        <RoundStatCard
+          title="Pending"
+          value={pendingInterviews.length}
+          icon={ShieldAlert}
+          accent="bg-amber-500"
+        />
+        <RoundStatCard
+          title="Hired"
+          value={hiredInterviews.length}
+          icon={Handshake}
+          accent="bg-emerald-600"
+        />
+        <RoundStatCard
+          title="Rejected"
+          value={rejectedInterviews.length}
+          icon={CircleOff}
+          accent="bg-rose-600"
+        />
+      </section>
+
+      <div className="crm-panel p-5 sm:p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="font-semibold">Interview Progression</h3>
-            <p className="text-sm">
-              Candidates stay in their current round table until you change
-              their round. Status changes don't move candidates between tables.
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Round Logic
             </p>
+            <h3 className="mt-2 text-2xl font-bold text-slate-950">
+              Interview progression stays explicit
+            </h3>
           </div>
+          <span className="crm-pill">{totalResults} visible interviews</span>
         </div>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+          Candidates remain in their current round table until you change their
+          round. Updating status changes the outcome without automatically moving
+          them to a new stage.
+        </p>
       </div>
 
       {error && (
-        <div className="alert alert-error">
-          <span>
-            {typeof error === "string" ? error : "Unable to load interviews."}
-          </span>
+        <div className="rounded-[22px] border border-rose-200 bg-rose-50/90 px-4 py-3 text-sm text-rose-700">
+          {typeof error === "string" ? error : "Unable to load interviews."}
         </div>
       )}
 
       {showInitialLoader && (
-        <div className="text-center py-8">
-          <span className="loading loading-spinner loading-lg"></span>
-          <p className="mt-2">Loading interviews...</p>
+        <div className="crm-panel flex min-h-60 items-center justify-center">
+          <div className="text-center">
+            <span className="loading loading-spinner loading-lg text-teal-600" />
+            <p className="mt-4 text-sm font-medium text-slate-600">
+              Loading interviews...
+            </p>
+          </div>
         </div>
       )}
 
@@ -342,7 +393,7 @@ export default function Interviews() {
           <InterviewTable
             interviews={firstRoundInterviews}
             title="1st Round Interviews"
-            badgeColor="badge-neutral"
+            badgeColor="border-slate-200 bg-slate-50 text-slate-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}
@@ -352,7 +403,7 @@ export default function Interviews() {
           <InterviewTable
             interviews={secondRoundInterviews}
             title="2nd Round Interviews"
-            badgeColor="badge-secondary"
+            badgeColor="border-teal-200 bg-teal-50 text-teal-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}
@@ -362,7 +413,7 @@ export default function Interviews() {
           <InterviewTable
             interviews={finalRoundInterviews}
             title="Final Round Interviews"
-            badgeColor="badge-accent"
+            badgeColor="border-orange-200 bg-orange-50 text-orange-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}
@@ -371,8 +422,8 @@ export default function Interviews() {
 
           <InterviewTable
             interviews={pendingInterviews}
-            title="Pending"
-            badgeColor="badge-error"
+            title="Pending Interviews"
+            badgeColor="border-amber-200 bg-amber-50 text-amber-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}
@@ -382,7 +433,7 @@ export default function Interviews() {
           <InterviewTable
             interviews={hiredInterviews}
             title="Hired Candidates"
-            badgeColor="badge-success"
+            badgeColor="border-emerald-200 bg-emerald-50 text-emerald-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}
@@ -392,7 +443,7 @@ export default function Interviews() {
           <InterviewTable
             interviews={rejectedInterviews}
             title="Rejected Candidates"
-            badgeColor="badge-error"
+            badgeColor="border-rose-200 bg-rose-50 text-rose-700"
             onEdit={(interview) => dispatch(showModal(interview))}
             onDelete={handleDeleteInterview}
             onSendEmail={sendMail}

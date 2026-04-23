@@ -1,48 +1,57 @@
+import { ArrowDownAZ, CalendarDays } from "lucide-react";
+
 export default function InterviewFilters({
   sortConfig,
   onSort,
   searchTerm,
   totalResults,
 }) {
-  return (
-    <div className="bg-base-100 p-4 rounded-xl shadow">
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
-        <div className="flex flex-wrap gap-2">
-          <button
-            className={`btn btn-outline ${
-              sortConfig.key === "candidate" ? "btn-active" : ""
-            }`}
-            onClick={() => onSort("candidate")}
-          >
-            Sort by Name{" "}
-            {sortConfig.key === "candidate"
-              ? sortConfig.direction === "asc"
-                ? "↑"
-                : "↓"
-              : ""}
-          </button>
+  const getButtonClass = (key) =>
+    sortConfig.key === key
+      ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-950/15"
+      : "border-slate-200 bg-white/85 text-slate-700 hover:border-slate-300 hover:bg-white";
 
-          <button
-            className={`btn btn-outline ${
-              sortConfig.key === "date" ? "btn-active" : ""
-            }`}
-            onClick={() => onSort("date")}
-          >
-            Sort by Date{" "}
-            {sortConfig.key === "date"
-              ? sortConfig.direction === "asc"
-                ? "↑"
-                : "↓"
-              : ""}
-          </button>
+  return (
+    <div className="crm-panel p-5 sm:p-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+            Sort & Filter
+          </p>
+          <h3 className="mt-2 text-2xl font-bold text-slate-950">
+            Refine the interview queue
+          </h3>
         </div>
 
-        {searchTerm && (
-          <span className="badge badge-ghost w-full md:w-auto text-sm">
-            Found {totalResults} results for "{searchTerm}"
-          </span>
-        )}
+        <div className="flex flex-wrap gap-2">
+          <button
+            className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${getButtonClass(
+              "candidate"
+            )}`}
+            onClick={() => onSort("candidate")}
+          >
+            <ArrowDownAZ className="h-[18px] w-[18px]" />
+            Sort by Name
+          </button>
+
+          <button
+            className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition ${getButtonClass(
+              "date"
+            )}`}
+            onClick={() => onSort("date")}
+          >
+            <CalendarDays className="h-[18px] w-[18px]" />
+            Sort by Date
+          </button>
+        </div>
       </div>
+
+      {searchTerm && (
+        <div className="mt-4 rounded-[20px] border border-teal-100 bg-teal-50/80 px-4 py-3 text-sm text-teal-800">
+          Found <strong>{totalResults}</strong> matching interview
+          {totalResults === 1 ? "" : "s"} for <strong>{searchTerm}</strong>.
+        </div>
+      )}
     </div>
   );
 }

@@ -1,56 +1,29 @@
-// import { Link, useLocation } from "react-router-dom";
-
-// export default function Sidebar() {
-//   const { pathname } = useLocation();
-
-//   const menu = [
-//     { name: "Dashboard", path: "/" },
-//     { name: "Candidates", path: "/candidates" },
-//     { name: "Interviews", path: "/interviews" },
-//     { name: "Upcoming Interviews", path: "/upcoming-interviews" }, 
-//     { name: "Settings", path: "/settings" },
-//   ];
-
-//   return (
-//     <aside className="hidden md:block w-64 fixed h-screen shadow-md p-6 overflow-y-auto bg-black/5">
-//       <h1 className="text-xl font-bold mb-10">Interview System</h1>
-
-//       {menu.map((item) => (
-//         <Link key={item.path} to={item.path}>
-//           <div
-//             className={`p-3 rounded-lg mb-3 cursor-pointer ${
-//               pathname === item.path
-//                 ? "bg-base-200 font-semibold"
-//                 : "hover:bg-blue-50"
-//             }`}
-//           >
-//             {item.name}
-//           </div>
-//         </Link>
-//       ))}
-//       <button
-//         className="mt-115 w-full bg-red-600 text-white py-2 hover:bg-red-500 rounded" 
-//         onClick={() => { localStorage.removeItem("token"); window.location.reload(); }}
-//       >
-//         Logout
-//       </button>
-//     </aside>
-//   );
-// }
+import {
+  CalendarClock,
+  CalendarDays,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+} from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../utils/auth";
+
+const menu = [
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
+  { name: "Candidates", path: "/candidates", icon: Users },
+  { name: "Interviews", path: "/interviews", icon: CalendarClock },
+  {
+    name: "Upcoming Interviews",
+    path: "/upcoming-interviews",
+    icon: CalendarDays,
+  },
+  { name: "Settings", path: "/settings", icon: Settings },
+];
 
 export default function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-
-  const menu = [
-    { name: "Dashboard", path: "/" },
-    { name: "Candidates", path: "/candidates" },
-    { name: "Interviews", path: "/interviews" },
-    { name: "Upcoming Interviews", path: "/upcoming-interviews" }, 
-    { name: "Settings", path: "/settings" },
-  ];
 
   const handleLogout = () => {
     logout();
@@ -58,29 +31,72 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="hidden md:block w-64 fixed h-screen shadow-md p-6 overflow-y-auto bg-gradient-to-b from-gray-900 via-gray-950 to-black text-white">
-      <h1 className="text-xl font-bold mb-10">Interview System</h1>
-
-      {menu.map((item) => (
-        <Link key={item.path} to={item.path}>
-          <div
-            className={`p-3 rounded-lg mb-3 cursor-pointer transition-all ${
-              pathname === item.path
-                ? "bg-indigo-600 text-white shadow-md"
-                : "hover:bg-gray-800 text-gray-300 hover:text-white"
-            }`}
-          >
-            {item.name}
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[19rem] p-4 lg:block">
+      <div className="crm-panel-dark flex h-full flex-col overflow-hidden p-5">
+        <div className="rounded-[24px] border border-white/10 bg-white/6 p-5">
+          <div className="mb-4 flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full bg-teal-400" />
+            <span className="h-3 w-3 rounded-full bg-amber-400" />
+            <span className="h-3 w-3 rounded-full bg-rose-400" />
           </div>
-        </Link>
-      ))}
+          <p className="text-xs uppercase tracking-[0.26em] text-slate-400">
+            Talent Command
+          </p>
+          <h2 className="mt-3 text-2xl font-bold text-white">HR CRM</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Modernize your hiring pipeline with a calmer, clearer workspace.
+          </p>
+        </div>
 
-      <button
-        className="mt-115 w-full bg-red-600 text-white py-2 hover:bg-red-500 rounded"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
+        <nav className="mt-8 flex-1 space-y-2">
+          {menu.map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.path;
+
+            return (
+              <Link key={item.path} to={item.path}>
+                <div
+                  className={`group flex items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-medium transition ${
+                    active
+                      ? "bg-white text-slate-950 shadow-lg shadow-black/10"
+                      : "text-slate-300 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  <span
+                    className={`flex h-10 w-10 items-center justify-center rounded-2xl transition ${
+                      active
+                        ? "bg-slate-950 text-white"
+                        : "bg-white/8 text-slate-300 group-hover:bg-white/12"
+                    }`}
+                  >
+                      <Icon className="h-[18px] w-[18px]" />
+                  </span>
+                  <span className="truncate">{item.name}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="mt-6 rounded-[24px] border border-white/10 bg-white/6 p-4">
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+            Team Pulse
+          </p>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Keep candidate updates, interviews, and decisions moving from one
+            focused workspace.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl border border-rose-400/20 bg-rose-500/12 px-4 py-3 text-sm font-semibold text-rose-100 transition hover:bg-rose-500/20"
+          onClick={handleLogout}
+        >
+          <LogOut className="h-[18px] w-[18px]" />
+          Logout
+        </button>
+      </div>
     </aside>
   );
 }

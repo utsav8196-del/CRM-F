@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CalendarDays, Clock3, Link2, UserRound, X } from "lucide-react";
 import { INTERVIEW_ROUND_LIST } from "../utils/constant";
 
 export default function InterviewModal({
@@ -20,19 +21,15 @@ export default function InterviewModal({
   const emailTimeoutRef = useRef(null);
   const phoneTimeoutRef = useRef(null);
 
-  // Default meeting link
   const DEFAULT_MEETING_LINK = "https://meet.google.com/abc-defg-hij";
-
-  // Check if round is Pending
   const isPendingRound = newInterview.round === "Pending";
 
-  // Pre-fill default meeting link when creating new interview and reset states
   useEffect(() => {
     if (showModal && !editingInterview) {
       setNewInterview((prev) => ({
         ...prev,
         meetingLink: DEFAULT_MEETING_LINK,
-        round: "Pending", // Set default round to Pending
+        round: "Pending",
       }));
       setIsUsingDefaultLink(true);
       setEmailStatus("");
@@ -40,19 +37,17 @@ export default function InterviewModal({
       setPhoneExists(false);
       setFormErrors({});
     } else if (showModal && editingInterview) {
-      // Reset duplicate states when editing
       setEmailUsed(false);
       setPhoneExists(false);
       setFormErrors({});
     }
   }, [showModal, editingInterview, setNewInterview]);
 
-  // Update email status when round changes
   useEffect(() => {
     if (newInterview.round === "Pending") {
-      setEmailStatus("Meeting link will be sent when round is scheduled");
+      setEmailStatus("Meeting link will be shared when the candidate reaches a scheduled round.");
     } else if (["1st Round", "2nd Round"].includes(newInterview.round)) {
-      setEmailStatus("Meeting link will be automatically sent via email");
+      setEmailStatus("Meeting link will be sent automatically for scheduled rounds.");
     } else {
       setEmailStatus("");
     }
@@ -60,7 +55,6 @@ export default function InterviewModal({
 
   if (!showModal) return null;
 
-  // Real-time phone check
   const checkPhoneDuplicate = async (phone) => {
     if (!phone || phone.length < 10) {
       setPhoneExists(false);
@@ -89,7 +83,7 @@ export default function InterviewModal({
       if (data.exists) {
         setFormErrors((prev) => ({
           ...prev,
-          phone: "⚠️ This phone number is already in use",
+          phone: "This phone number is already in use",
         }));
       } else {
         setFormErrors((prev) => {
@@ -105,7 +99,6 @@ export default function InterviewModal({
     }
   };
 
-  // Real-time email check
   const checkEmailDuplicate = async (email) => {
     if (!email || !email.includes("@")) {
       setEmailUsed(false);
@@ -134,7 +127,7 @@ export default function InterviewModal({
       if (data.exists) {
         setFormErrors((prev) => ({
           ...prev,
-          email: "⚠️ This email is already in use",
+          email: "This email is already in use",
         }));
       } else {
         setFormErrors((prev) => {
@@ -150,7 +143,6 @@ export default function InterviewModal({
     }
   };
 
-  // Validate form before submission
   const validateForm = () => {
     const errors = {};
 
@@ -174,37 +166,38 @@ export default function InterviewModal({
       errors.position = "Position is required";
     }
 
-    if (newInterview.currentCTC && isNaN(newInterview.currentCTC)) {
+    if (newInterview.currentCTC && Number.isNaN(Number(newInterview.currentCTC))) {
       errors.currentCTC = "Current CTC must be a number";
     }
 
-    if (newInterview.expectedCTC && isNaN(newInterview.expectedCTC)) {
+    if (newInterview.expectedCTC && Number.isNaN(Number(newInterview.expectedCTC))) {
       errors.expectedCTC = "Expected CTC must be a number";
     }
 
-    if (newInterview.totalExperience && isNaN(newInterview.totalExperience)) {
+    if (
+      newInterview.totalExperience &&
+      Number.isNaN(Number(newInterview.totalExperience))
+    ) {
       errors.totalExperience = "Total experience must be a number";
     }
 
-    // Check duplicates only if they exist from API check
     if (phoneExists) {
-      errors.phone = "⚠️ This phone number is already in use";
+      errors.phone = "This phone number is already in use";
     }
+
     if (emailUsed) {
-      errors.email = "⚠️ This email is already in use";
+      errors.email = "This email is already in use";
     }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Enhanced submit handler
   const handleSubmit = () => {
     if (!validateForm()) {
       return;
     }
 
-    // Ensure meeting link is set (use default if empty and not pending)
     const interviewData = {
       ...newInterview,
       meetingLink: isPendingRound
@@ -214,35 +207,29 @@ export default function InterviewModal({
 
     setNewInterview(interviewData);
 
-    // Call onSubmit after a small delay to ensure state is updated
     setTimeout(() => {
       onSubmit();
     }, 0);
   };
 
-  // Handle input changes with error clearing
   const handleInputChange = (field, value) => {
     setNewInterview((prev) => ({
       ...prev,
       [field]: value,
     }));
 
-    // Trigger real-time checks
     if (field === "phone") {
       if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
       phoneTimeoutRef.current = setTimeout(() => {
         checkPhoneDuplicate(value);
-      }, 1000); // 2s delay
+      }, 1000);
     } else if (field === "email") {
-      if (emailTimeoutRef.current) {
-        clearTimeout(emailTimeoutRef.current);
-      }
+      if (emailTimeoutRef.current) clearTimeout(emailTimeoutRef.current);
       emailTimeoutRef.current = setTimeout(() => {
         checkEmailDuplicate(value);
-      }, 1000); // 2s delay
+      }, 1000);
     }
 
-    // Check if user is manually typing (not using default)
     if (field === "meetingLink") {
       if (value === DEFAULT_MEETING_LINK) {
         setIsUsingDefaultLink(true);
@@ -251,12 +238,11 @@ export default function InterviewModal({
       }
     }
 
-    // Update email status when round changes
     if (field === "round") {
       if (value === "Pending") {
-        setEmailStatus("Meeting link will be sent when round is scheduled");
+        setEmailStatus("Meeting link will be shared when the candidate reaches a scheduled round.");
       } else if (["1st Round", "2nd Round"].includes(value)) {
-        setEmailStatus("Meeting link will be automatically sent via email");
+        setEmailStatus("Meeting link will be sent automatically for scheduled rounds.");
       } else {
         setEmailStatus("");
       }
@@ -270,18 +256,6 @@ export default function InterviewModal({
     }
   };
 
-  // Reset meeting link to default
-  const handleResetMeetingLink = () => {
-    if (!isPendingRound) {
-      setNewInterview((prev) => ({
-        ...prev,
-        meetingLink: DEFAULT_MEETING_LINK,
-      }));
-      setIsUsingDefaultLink(true);
-    }
-  };
-
-  // Use default link
   const handleUseDefaultLink = () => {
     if (!isPendingRound) {
       setNewInterview((prev) => ({
@@ -292,7 +266,6 @@ export default function InterviewModal({
     }
   };
 
-  // Clear meeting link for manual input
   const handleClearForManualInput = () => {
     if (!isPendingRound) {
       setNewInterview((prev) => ({
@@ -303,420 +276,427 @@ export default function InterviewModal({
     }
   };
 
-  // Enhanced onClose handler: reset all states
   const handleModalClose = () => {
-    // Reset all local states
     setEmailUsed(false);
     setPhoneExists(false);
     setEmailChecking(false);
-    setPhoneChecking(false); 
+    setPhoneChecking(false);
     setFormErrors({});
     setEmailStatus("");
+
     if (emailTimeoutRef.current) clearTimeout(emailTimeoutRef.current);
     if (phoneTimeoutRef.current) clearTimeout(phoneTimeoutRef.current);
+
     onClose();
   };
 
+  const inputClass = (field) =>
+    `crm-field ${formErrors[field] ? "!border-rose-400 !ring-4 !ring-rose-500/10" : ""}`;
+
   return (
-    <div className="modal modal-open fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-40">
-      <div className="modal-box w-full max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Modal header */}
-        <div className="shrink-0 px-4 pt-4">
-          <h3 className="font-bold text-lg mb-6">
-            {editingInterview ? "Edit Interview" : "Schedule New Interview"}
-          </h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 px-4 py-6 backdrop-blur-sm">
+      <div className="crm-shell flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden">
+        <div className="flex flex-col gap-4 border-b border-slate-200/80 bg-slate-950 px-5 py-5 text-white sm:flex-row sm:items-start sm:justify-between sm:px-6">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
+              Interview Form
+            </p>
+            <h3 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+              {editingInterview ? "Edit Interview" : "Schedule New Interview"}
+            </h3>
+            <p className="mt-2 max-w-2xl text-sm text-slate-300">
+              Capture candidate details, round planning, and meeting info in one
+              structured form.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-white"
+            onClick={handleModalClose}
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
-        {/* Scrollable body */}
-        <div
-          className="flex-1 overflow-y-auto px-4 pb-4"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          <style >{`
-            .flex-1.overflow-y-auto::-webkit-scrollbar {
-              display: none;
-            }
-          `}</style>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Candidate Name */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Candidate Name *
-                </span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter candidate name"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.candidate ? "input-error" : ""
-                }`}
-                value={newInterview.candidate}
-                onChange={(e) => handleInputChange("candidate", e.target.value)}
-              />
-              {formErrors.candidate && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.candidate}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Email */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Email *{" "}
-                  {emailChecking && (
-                    <span className="text-blue-500">⏳ Checking...</span>
+
+        <div className="flex-1 overflow-y-auto p-5 sm:p-6">
+          <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+            <section className="rounded-[26px] border border-slate-100 bg-white/80 p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+                  <UserRound className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                    Candidate Basics
+                  </p>
+                  <h4 className="mt-1 text-xl font-bold text-slate-950">
+                    Identity & role information
+                  </h4>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="crm-label">Candidate Name *</label>
+                  <input
+                    type="text"
+                    placeholder="Enter candidate name"
+                    className={inputClass("candidate")}
+                    value={newInterview.candidate}
+                    onChange={(event) =>
+                      handleInputChange("candidate", event.target.value)
+                    }
+                  />
+                  {formErrors.candidate && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.candidate}
+                    </p>
                   )}
-                </span>
-              </label>
-              <input
-                type="email"
-                placeholder="Enter email address"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.email ? "input-error" : ""
-                } ${emailUsed ? "border-2 border-red-500" : ""}`}
-                value={newInterview.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-              />
-              {formErrors.email && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.email}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Phone */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Phone *{" "}
-                  {phoneChecking && (
-                    <span className="text-blue-500">⏳ Checking...</span>
-                  )}
-                </span>
-              </label>
-              <input
-                type="tel"
-                placeholder="Enter 10-digit phone number"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.phone ? "input-error" : ""
-                } ${phoneExists ? "border-2 border-red-500" : ""}`}
-                value={newInterview?.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-              />
-              {formErrors.phone && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.phone}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Position */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">Position *</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter job position"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.position ? "input-error" : ""
-                }`}
-                value={newInterview.position}
-                onChange={(e) => handleInputChange("position", e.target.value)}
-              />
-              {formErrors.position && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.position}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Current CTC */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Current CTC (LPA)
-                </span>
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                placeholder="2.5"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.currentCTC ? "input-error" : ""
-                }`}
-                value={newInterview.currentCTC || ""}
-                onChange={(e) =>
-                  handleInputChange("currentCTC", e.target.value)
-                }
-              />
-              {formErrors.currentCTC && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.currentCTC}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Expected CTC */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Expected CTC (LPA)
-                </span>
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                placeholder="3.5"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.expectedCTC ? "input-error" : ""
-                }`}
-                value={newInterview.expectedCTC || ""}
-                onChange={(e) =>
-                  handleInputChange("expectedCTC", e.target.value)
-                }
-              />
-              {formErrors.expectedCTC && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.expectedCTC}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Total Experience */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Total Experience (Years)
-                </span>
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                placeholder="Enter total experience"
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  formErrors.totalExperience ? "input-error" : ""
-                }`}
-                value={newInterview.totalExperience || ""}
-                onChange={(e) =>
-                  handleInputChange("totalExperience", e.target.value)
-                }
-              />
-              {formErrors.totalExperience && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.totalExperience}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Divider */}
-            <div className="flex w-full flex-col md:col-span-2">
-              <div className="divider divider-warning">Interview Details</div>
-            </div>
-            {/* Interview Round */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Interview Round
-                </span>
-              </label>
-              <select
-                className="select select-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.round}
-                onChange={(e) => handleInputChange("round", e.target.value)}
-              >
-                {(INTERVIEW_ROUND_LIST || []).map((round) => (
-                  <option key={round} value={round}>
-                    {round}
-                  </option>
-                ))}
-              </select>
-              {emailStatus && (
-                <label className="label">
-                  <span
-                    className={`label-text-alt ${
-                      isPendingRound ? "text-warning" : "text-success"
-                    }`}
-                  >
-                    {emailStatus}
-                  </span>
-                </label>
-              )}
-            </div>
-            {/* Expected Date of Joining */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Expected Date of Joining
-                </span>
-              </label>
-              <input
-                type="date"
-                className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.dateOfJoining || ""}
-                onChange={(e) =>
-                  handleInputChange("dateOfJoining", e.target.value)
-                }
-              />
-            </div>
-            {/* Interview Date */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">Interview Date</span>
-              </label>
-              <input
-                type="date"
-                className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.date}
-                onChange={(e) => handleInputChange("date", e.target.value)}
-              />
-            </div>
-            {/* Interview Time */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">Interview Time</span>
-              </label>
-              <input
-                type="time"
-                className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.time}
-                onChange={(e) => handleInputChange("time", e.target.value)}
-              />
-            </div>
-            {/* Meeting Link */}
-            <div className="form-control md:col-span-2">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                <label className="label p-0">
-                  <span className="label-text font-semibold">
-                    Meeting Link
-                    {isPendingRound && (
-                      <span className="text-warning ml-2">
-                        (Disabled for Pending Round)
+                </div>
+
+                <div>
+                  <label className="crm-label">
+                    Email *
+                    {emailChecking && (
+                      <span className="ml-2 text-xs font-medium text-teal-600">
+                        Checking...
                       </span>
                     )}
-                  </span>
-                </label>
-                {!isPendingRound && (
-                  <div className="flex gap-2">
-                    {!isUsingDefaultLink && (
-                      <button
-                        type="button"
-                        className="btn btn-xs btn-primary"
-                        onClick={handleUseDefaultLink}
-                      >
-                        Use Default
-                      </button>
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Enter email address"
+                    className={inputClass("email")}
+                    value={newInterview.email}
+                    onChange={(event) =>
+                      handleInputChange("email", event.target.value)
+                    }
+                  />
+                  {formErrors.email && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="crm-label">
+                    Phone *
+                    {phoneChecking && (
+                      <span className="ml-2 text-xs font-medium text-teal-600">
+                        Checking...
+                      </span>
                     )}
-                    {isUsingDefaultLink && (
-                      <button
-                        type="button"
-                        className="btn btn-xs btn-outline"
-                        onClick={handleClearForManualInput}
-                      >
-                        Write Custom
-                      </button>
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="Enter 10-digit phone number"
+                    className={inputClass("phone")}
+                    value={newInterview.phone}
+                    onChange={(event) =>
+                      handleInputChange("phone", event.target.value)
+                    }
+                  />
+                  {formErrors.phone && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.phone}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="crm-label">Position *</label>
+                  <input
+                    type="text"
+                    placeholder="Enter job position"
+                    className={inputClass("position")}
+                    value={newInterview.position}
+                    onChange={(event) =>
+                      handleInputChange("position", event.target.value)
+                    }
+                  />
+                  {formErrors.position && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.position}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-[26px] border border-slate-100 bg-white/80 p-5 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-600 text-white">
+                  <CalendarDays className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                    Interview Setup
+                  </p>
+                  <h4 className="mt-1 text-xl font-bold text-slate-950">
+                    Round, schedule, and access
+                  </h4>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="crm-label">Interview Round</label>
+                  <select
+                    className="crm-select"
+                    value={newInterview.round}
+                    onChange={(event) =>
+                      handleInputChange("round", event.target.value)
+                    }
+                  >
+                    {(INTERVIEW_ROUND_LIST || []).map((round) => (
+                      <option key={round} value={round}>
+                        {round}
+                      </option>
+                    ))}
+                  </select>
+                  {emailStatus && (
+                    <p
+                      className={`mt-2 text-sm ${
+                        isPendingRound ? "text-amber-600" : "text-teal-700"
+                      }`}
+                    >
+                      {emailStatus}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="crm-label">Expected Date of Joining</label>
+                  <input
+                    type="date"
+                    className="crm-field"
+                    value={newInterview.dateOfJoining || ""}
+                    onChange={(event) =>
+                      handleInputChange("dateOfJoining", event.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="crm-label">Interview Date</label>
+                  <div className="relative">
+                    <CalendarDays className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="date"
+                      className="crm-field pl-11"
+                      value={newInterview.date}
+                      onChange={(event) =>
+                        handleInputChange("date", event.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="crm-label">Interview Time</label>
+                  <div className="relative">
+                    <Clock3 className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="time"
+                      className="crm-field pl-11"
+                      value={newInterview.time}
+                      onChange={(event) =>
+                        handleInputChange("time", event.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-2">
+                  <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <label className="crm-label mb-0">
+                      Meeting Link
+                      {isPendingRound && (
+                        <span className="ml-2 text-xs font-medium text-amber-600">
+                          Disabled for Pending round
+                        </span>
+                      )}
+                    </label>
+
+                    {!isPendingRound && (
+                      <div className="flex flex-wrap gap-2">
+                        {!isUsingDefaultLink && (
+                          <button
+                            type="button"
+                            className="crm-button-secondary !rounded-xl !px-3 !py-2"
+                            onClick={handleUseDefaultLink}
+                          >
+                            Use Default
+                          </button>
+                        )}
+
+                        {isUsingDefaultLink && (
+                          <button
+                            type="button"
+                            className="crm-button-secondary !rounded-xl !px-3 !py-2"
+                            onClick={handleClearForManualInput}
+                          >
+                            Write Custom
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
+
+                  <div className="relative">
+                    <Link2 className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      placeholder={
+                        isPendingRound
+                          ? "Meeting link disabled for Pending round"
+                          : isUsingDefaultLink
+                          ? "Using default meeting link"
+                          : "Enter custom meeting link"
+                      }
+                      className={`crm-field pl-11 ${
+                        isPendingRound ? "cursor-not-allowed bg-slate-100/95" : ""
+                      }`}
+                      value={isPendingRound ? "" : newInterview.meetingLink}
+                      onChange={(event) =>
+                        !isPendingRound &&
+                        handleInputChange("meetingLink", event.target.value)
+                      }
+                      disabled={isPendingRound}
+                    />
+                  </div>
+
+                  <div className="mt-2 flex flex-col gap-1 text-sm sm:flex-row sm:items-center sm:justify-between">
+                    <span className={isPendingRound ? "text-amber-600" : "text-teal-700"}>
+                      {isPendingRound
+                        ? "Meeting link will unlock when the interview is scheduled."
+                        : isUsingDefaultLink
+                        ? "Currently using the default meeting link."
+                        : "Custom meeting link mode is active."}
+                    </span>
+                    {!isPendingRound && (
+                      <span className="text-slate-400">
+                        Default: meet.google.com/abc-defg-hij
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder={
-                  isPendingRound
-                    ? "Meeting link disabled for Pending round"
-                    : isUsingDefaultLink
-                    ? "Using default meeting link"
-                    : "Enter custom meeting link..."
-                }
-                className={`input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral ${
-                  isPendingRound
-                    ? "input-disabled bg-gray-100 cursor-not-allowed"
-                    : ""
-                }`}
-                value={isPendingRound ? "" : newInterview.meetingLink}
-                onChange={(e) =>
-                  !isPendingRound &&
-                  handleInputChange("meetingLink", e.target.value)
-                }
-                disabled={isPendingRound}
-              />
-              <div className="flex justify-between items-center mt-1">
-                <label className="label p-0">
-                  <span
-                    className={`label-text-alt ${
-                      isPendingRound ? "text-warning" : "text-info"
-                    }`}
-                  >
-                    {isPendingRound
-                      ? "❌ Meeting link disabled - select a scheduled round"
-                      : isUsingDefaultLink
-                      ? "✓ Using default meeting link"
-                      : "↳ Writing custom meeting link"}
-                  </span>
-                </label>
-                {!isPendingRound && (
-                  <span className="label-text-alt text-gray-500">
-                    Default: meet.google.com/abc-defg-hij
-                  </span>
-                )}
+            </section>
+
+            <section className="rounded-[26px] border border-slate-100 bg-white/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+                Compensation & Experience
+              </p>
+              <h4 className="mt-2 text-xl font-bold text-slate-950">
+                Compensation snapshot
+              </h4>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-3">
+                <div>
+                  <label className="crm-label">Current CTC (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="2.5"
+                    className={inputClass("currentCTC")}
+                    value={newInterview.currentCTC || ""}
+                    onChange={(event) =>
+                      handleInputChange("currentCTC", event.target.value)
+                    }
+                  />
+                  {formErrors.currentCTC && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.currentCTC}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="crm-label">Expected CTC (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="3.5"
+                    className={inputClass("expectedCTC")}
+                    value={newInterview.expectedCTC || ""}
+                    onChange={(event) =>
+                      handleInputChange("expectedCTC", event.target.value)
+                    }
+                  />
+                  {formErrors.expectedCTC && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.expectedCTC}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="crm-label">Total Experience (Years)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    placeholder="4.0"
+                    className={inputClass("totalExperience")}
+                    value={newInterview.totalExperience || ""}
+                    onChange={(event) =>
+                      handleInputChange("totalExperience", event.target.value)
+                    }
+                  />
+                  {formErrors.totalExperience && (
+                    <p className="mt-2 text-sm text-rose-600">
+                      {formErrors.totalExperience}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-            {/* Divider */}
-            <div className="flex w-full flex-col md:col-span-2">
-              <div className="divider divider-warning">
+            </section>
+
+            <section className="rounded-[26px] border border-slate-100 bg-white/80 p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                 Additional Information
+              </p>
+              <h4 className="mt-2 text-xl font-bold text-slate-950">
+                Company and notice details
+              </h4>
+
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="crm-label">Notice Period (Days)</label>
+                  <input
+                    type="number"
+                    placeholder="Enter notice period"
+                    className="crm-field"
+                    value={newInterview.noticePeriod || ""}
+                    onChange={(event) =>
+                      handleInputChange("noticePeriod", event.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="crm-label">Current Company</label>
+                  <input
+                    type="text"
+                    placeholder="Enter current company"
+                    className="crm-field"
+                    value={newInterview.currentCompany || ""}
+                    onChange={(event) =>
+                      handleInputChange("currentCompany", event.target.value)
+                    }
+                  />
+                </div>
               </div>
-            </div>
-            {/* Notice Period */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Notice Period (Days)
-                </span>
-              </label>
-              <input
-                type="number"
-                placeholder="Enter notice period"
-                className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.noticePeriod || ""}
-                onChange={(e) =>
-                  handleInputChange("noticePeriod", e.target.value)
-                }
-              />
-            </div>
-            {/* Current Company */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-semibold">
-                  Current Company
-                </span>
-              </label>
-              <input
-                type="text"
-                placeholder="Enter current company"
-                className="input input-bordered w-full focus:outline-none focus:ring-2 focus:ring-neutral"
-                value={newInterview.currentCompany || ""}
-                onChange={(e) =>
-                  handleInputChange("currentCompany", e.target.value)
-                }
-              />
-            </div>
+            </section>
           </div>
         </div>
-        {/* Footer Buttons */}
-        <div className="shrink-0 px-4 pb-4 pt-2 border-t flex justify-end gap-2">
+
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-200/80 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
           <button
             onClick={handleModalClose}
-            className="btn btn-outline"
+            className="crm-button-secondary"
             disabled={loading}
           >
             Cancel
@@ -730,9 +710,9 @@ export default function InterviewModal({
               phoneChecking ||
               emailChecking
             }
-            className="btn btn-primary"
+            className="crm-button-primary"
           >
-            {loading ? "Saving..." : editingInterview ? "Update" : "Add"}
+            {loading ? "Saving..." : editingInterview ? "Update Interview" : "Add Interview"}
           </button>
         </div>
       </div>
